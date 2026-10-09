@@ -1,0 +1,14 @@
+bin/
+obj/
+.vs/
+local-ai/
+outputs/
+dist/
+__pycache__/
+UEPlugin/**/Binaries/
+UEPlugin/**/Intermediate/
+UEPlugin/**/Saved/
+UEPlugin/**/Content/
+UEPlugin/Packaged/
+drawings/
+skeleton-types/

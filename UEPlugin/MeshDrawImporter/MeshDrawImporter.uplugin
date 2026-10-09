@@ -1,0 +1,16 @@
+{
+  "FileVersion": 3,
+  "Version": 1,
+  "VersionName": "1.0.0",
+  "FriendlyName": "MeshDraw Importer",
+  "Description": "Imports self-contained MeshDraw assets, meshes, painted material channels, and rig data.",
+  "Category": "Importers",
+  "CreatedBy": "MeshDraw",
+  "EngineVersion": "5.8.0",
+  "CanContainContent": false,
+  "Installed": false,
+  "Modules": [
+    { "Name": "MeshDrawRuntime", "Type": "Runtime", "LoadingPhase": "Default" },
+    { "Name": "MeshDrawEditor", "Type": "Editor", "LoadingPhase": "Default" }
+  ]
+}

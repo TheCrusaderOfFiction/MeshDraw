@@ -1,0 +1,12 @@
+schema_version = "1.0.0"
+id = "meshdraw_io"
+version = "1.0.0"
+name = "MeshDraw Import Export"
+tagline = "Edit MeshDraw meshes and return them to Unreal"
+maintainer = "MeshDraw"
+type = "add-on"
+blender_version_min = "4.2.0"
+license = ["SPDX:GPL-3.0-or-later"]
+tags = ["Import-Export"]
+[permissions]
+files = "Read assets and write chosen mesh and texture exports"

@@ -1,0 +1,2472 @@
+[
+  {
+    "category": "Adjust Color",
+    "key": "brightness_contrast",
+    "name": "Brightness & Contrast",
+    "controls": [
+      {
+        "key": "brightness",
+        "label": "Brightness",
+        "min": -1,
+        "max": 1,
+        "value": 0.1,
+        "step": 0.01,
+        "type": "number"
+      },
+      {
+        "key": "contrast",
+        "label": "Contrast",
+        "min": -1,
+        "max": 3,
+        "value": 0.2,
+        "step": 0.01,
+        "type": "number"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Adjust Color",
+    "key": "tone_curve",
+    "name": "Tone Curve",
+    "controls": [
+      {
+        "key": "black",
+        "label": "Output at input 0%",
+        "min": 0,
+        "max": 1,
+        "value": 0,
+        "step": 0.01,
+        "type": "number"
+      },
+      {
+        "key": "shadows",
+        "label": "Output at input 25%",
+        "min": 0,
+        "max": 1,
+        "value": 0.2,
+        "step": 0.01,
+        "type": "number"
+      },
+      {
+        "key": "midtones",
+        "label": "Output at input 50%",
+        "min": 0,
+        "max": 1,
+        "value": 0.5,
+        "step": 0.01,
+        "type": "number"
+      },
+      {
+        "key": "highlights",
+        "label": "Output at input 75%",
+        "min": 0,
+        "max": 1,
+        "value": 0.85,
+        "step": 0.01,
+        "type": "number"
+      },
+      {
+        "key": "white",
+        "label": "Output at input 100%",
+        "min": 0,
+        "max": 1,
+        "value": 1,
+        "step": 0.01,
+        "type": "number"
+      }
+    ],
+    "note": "Five adjustable curve points, with linear interpolation."
+  },
+  {
+    "category": "Adjust Color",
+    "key": "hsl",
+    "name": "Hue Saturation Lightness",
+    "controls": [
+      {
+        "key": "hue",
+        "label": "Hue (degrees)",
+        "min": -180,
+        "max": 180,
+        "value": 30,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "saturation",
+        "label": "Saturation",
+        "min": -1,
+        "max": 2,
+        "value": 0.2,
+        "step": 0.01,
+        "type": "number"
+      },
+      {
+        "key": "lightness",
+        "label": "Lightness",
+        "min": -1,
+        "max": 1,
+        "value": 0,
+        "step": 0.01,
+        "type": "number"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Adjust Color",
+    "key": "color_balance",
+    "name": "Color Balance",
+    "controls": [
+      {
+        "key": "red",
+        "label": "Red",
+        "min": -1,
+        "max": 1,
+        "value": 0.15,
+        "step": 0.01,
+        "type": "number"
+      },
+      {
+        "key": "green",
+        "label": "Green",
+        "min": -1,
+        "max": 1,
+        "value": 0,
+        "step": 0.01,
+        "type": "number"
+      },
+      {
+        "key": "blue",
+        "label": "Blue",
+        "min": -1,
+        "max": 1,
+        "value": -0.1,
+        "step": 0.01,
+        "type": "number"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Adjust Color",
+    "key": "extract_lines",
+    "name": "Extract Line Drawing",
+    "controls": [
+      {
+        "key": "color",
+        "label": "Color / foreground",
+        "type": "color",
+        "text": "#306EBB"
+      },
+      {
+        "key": "gamma",
+        "label": "Line density",
+        "min": 0.1,
+        "max": 4,
+        "value": 1,
+        "step": 0.01,
+        "type": "number"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Adjust Color",
+    "key": "edges_handwriting",
+    "name": "Find Edges (Handwriting)",
+    "controls": [
+      {
+        "key": "color",
+        "label": "Color / foreground",
+        "type": "color",
+        "text": "#306EBB"
+      },
+      {
+        "key": "detail",
+        "label": "Edge detail",
+        "min": 0.1,
+        "max": 10,
+        "value": 3,
+        "step": 0.01,
+        "type": "number"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Adjust Color",
+    "key": "find_edges",
+    "name": "Find Edges",
+    "controls": [
+      {
+        "key": "detail",
+        "label": "Edge detail",
+        "min": 0.1,
+        "max": 10,
+        "value": 3,
+        "step": 0.01,
+        "type": "number"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Adjust Color",
+    "key": "drawing_color",
+    "name": "Change Drawing Color",
+    "controls": [
+      {
+        "key": "color",
+        "label": "Color / foreground",
+        "type": "color",
+        "text": "#306EBB"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Adjust Color",
+    "key": "mono_color",
+    "name": "Mono Color",
+    "controls": [
+      {
+        "key": "color",
+        "label": "Color / foreground",
+        "type": "color",
+        "text": "#306EBB"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Adjust Color",
+    "key": "grayscale",
+    "name": "Grayscale",
+    "controls": [],
+    "note": ""
+  },
+  {
+    "category": "Adjust Color",
+    "key": "black_white",
+    "name": "Black & White",
+    "controls": [
+      {
+        "key": "threshold",
+        "label": "Threshold",
+        "min": 0,
+        "max": 1,
+        "value": 0.5,
+        "step": 0.01,
+        "type": "number"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Adjust Color",
+    "key": "posterize",
+    "name": "Posterize",
+    "controls": [
+      {
+        "key": "levels",
+        "label": "Color levels",
+        "min": 2,
+        "max": 32,
+        "value": 5,
+        "step": 1,
+        "type": "number"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Adjust Color",
+    "key": "invert",
+    "name": "Invert Color",
+    "controls": [],
+    "note": ""
+  },
+  {
+    "category": "Adjust Color",
+    "key": "gradient_map",
+    "name": "Gradation Map",
+    "controls": [
+      {
+        "key": "color",
+        "label": "Color / foreground",
+        "type": "color",
+        "text": "#306EBB"
+      },
+      {
+        "key": "color2",
+        "label": "Second color / source color",
+        "type": "color",
+        "text": "#F7CF79"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Adjust Color",
+    "key": "levels",
+    "name": "Levels Adjustment",
+    "controls": [
+      {
+        "key": "black",
+        "label": "Black input",
+        "min": 0,
+        "max": 0.99,
+        "value": 0.05,
+        "step": 0.01,
+        "type": "number"
+      },
+      {
+        "key": "white",
+        "label": "White input",
+        "min": 0.01,
+        "max": 1,
+        "value": 0.95,
+        "step": 0.01,
+        "type": "number"
+      },
+      {
+        "key": "gamma",
+        "label": "Gamma",
+        "min": 0.1,
+        "max": 4,
+        "value": 1,
+        "step": 0.01,
+        "type": "number"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Adjust Color",
+    "key": "replace_color",
+    "name": "Replace Color",
+    "controls": [
+      {
+        "key": "color",
+        "label": "Color / foreground",
+        "type": "color",
+        "text": "#306EBB"
+      },
+      {
+        "key": "color2",
+        "label": "Second color / source color",
+        "type": "color",
+        "text": "#F7CF79"
+      },
+      {
+        "key": "tolerance",
+        "label": "Color tolerance",
+        "min": 0,
+        "max": 1,
+        "value": 0.25,
+        "step": 0.01,
+        "type": "number"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Blur",
+    "key": "gaussian",
+    "name": "Gaussian Blur",
+    "controls": [
+      {
+        "key": "radius",
+        "label": "Radius / distance (px)",
+        "min": 0,
+        "max": 100,
+        "value": 8,
+        "step": 1,
+        "type": "number"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Blur",
+    "key": "zoom_blur",
+    "name": "Zooming Blur",
+    "controls": [
+      {
+        "key": "radius",
+        "label": "Radius / distance (px)",
+        "min": 0,
+        "max": 100,
+        "value": 8,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "center_x",
+        "label": "Center X",
+        "min": 0,
+        "max": 1,
+        "value": 0.5,
+        "step": 0.01,
+        "type": "number"
+      },
+      {
+        "key": "center_y",
+        "label": "Center Y",
+        "min": 0,
+        "max": 1,
+        "value": 0.5,
+        "step": 0.01,
+        "type": "number"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Blur",
+    "key": "motion_blur",
+    "name": "Moving Blur",
+    "controls": [
+      {
+        "key": "radius",
+        "label": "Radius / distance (px)",
+        "min": 0,
+        "max": 100,
+        "value": 8,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "angle",
+        "label": "Angle (degrees)",
+        "min": -180,
+        "max": 180,
+        "value": 45,
+        "step": 1,
+        "type": "number"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Blur",
+    "key": "spin_blur",
+    "name": "Spin Blur",
+    "controls": [
+      {
+        "key": "angle",
+        "label": "Angle (degrees)",
+        "min": -180,
+        "max": 180,
+        "value": 45,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "center_x",
+        "label": "Center X",
+        "min": 0,
+        "max": 1,
+        "value": 0.5,
+        "step": 0.01,
+        "type": "number"
+      },
+      {
+        "key": "center_y",
+        "label": "Center Y",
+        "min": 0,
+        "max": 1,
+        "value": 0.5,
+        "step": 0.01,
+        "type": "number"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Blur",
+    "key": "lens",
+    "name": "Lens Blur",
+    "controls": [
+      {
+        "key": "radius",
+        "label": "Radius / distance (px)",
+        "min": 0,
+        "max": 100,
+        "value": 8,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "angle",
+        "label": "Angle (degrees)",
+        "min": -180,
+        "max": 180,
+        "value": 45,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "brightness",
+        "label": "Brightness",
+        "min": 0.1,
+        "max": 3,
+        "value": 1.1,
+        "step": 0.01,
+        "type": "number"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Blur",
+    "key": "mosaic",
+    "name": "Mosaic",
+    "controls": [
+      {
+        "key": "size",
+        "label": "Cell / pattern size (px)",
+        "min": 2,
+        "max": 150,
+        "value": 16,
+        "step": 1,
+        "type": "number"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Blur",
+    "key": "unsharp",
+    "name": "Unsharp Mask",
+    "controls": [
+      {
+        "key": "radius",
+        "label": "Radius / distance (px)",
+        "min": 0,
+        "max": 100,
+        "value": 8,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "strength",
+        "label": "Strength",
+        "min": 0,
+        "max": 2,
+        "value": 1,
+        "step": 0.01,
+        "type": "number"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Blur",
+    "key": "frosted",
+    "name": "Frosted Glass",
+    "controls": [
+      {
+        "key": "radius",
+        "label": "Radius / distance (px)",
+        "min": 0,
+        "max": 100,
+        "value": 8,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "seed",
+        "label": "Pattern seed",
+        "min": 0,
+        "max": 9999,
+        "value": 12,
+        "step": 1,
+        "type": "number"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Style",
+    "key": "stroke_both",
+    "name": "Stroke (Both)",
+    "controls": [
+      {
+        "key": "radius",
+        "label": "Radius / distance (px)",
+        "min": 0,
+        "max": 100,
+        "value": 8,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "color",
+        "label": "Color / foreground",
+        "type": "color",
+        "text": "#306EBB"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Style",
+    "key": "stained_glass",
+    "name": "Stained Glass",
+    "controls": [
+      {
+        "key": "size",
+        "label": "Cell / pattern size (px)",
+        "min": 2,
+        "max": 150,
+        "value": 16,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "color",
+        "label": "Color / foreground",
+        "type": "color",
+        "text": "#306EBB"
+      },
+      {
+        "key": "border",
+        "label": "Lead width (px)",
+        "min": 1,
+        "max": 12,
+        "value": 2,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "seed",
+        "label": "Pattern seed",
+        "min": 0,
+        "max": 9999,
+        "value": 12,
+        "step": 1,
+        "type": "number"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Style",
+    "key": "wet_edge",
+    "name": "Wet Edge",
+    "controls": [
+      {
+        "key": "radius",
+        "label": "Radius / distance (px)",
+        "min": 0,
+        "max": 100,
+        "value": 8,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "strength",
+        "label": "Strength",
+        "min": 0,
+        "max": 2,
+        "value": 1,
+        "step": 0.01,
+        "type": "number"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Style",
+    "key": "inner_glow",
+    "name": "Glow (Inner)",
+    "controls": [
+      {
+        "key": "radius",
+        "label": "Radius / distance (px)",
+        "min": 0,
+        "max": 100,
+        "value": 8,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "strength",
+        "label": "Strength",
+        "min": 0,
+        "max": 2,
+        "value": 1,
+        "step": 0.01,
+        "type": "number"
+      },
+      {
+        "key": "color",
+        "label": "Color / foreground",
+        "type": "color",
+        "text": "#306EBB"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Style",
+    "key": "bevel_inner",
+    "name": "Bevel (Inner)",
+    "controls": [
+      {
+        "key": "radius",
+        "label": "Radius / distance (px)",
+        "min": 0,
+        "max": 100,
+        "value": 8,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "strength",
+        "label": "Strength",
+        "min": 0,
+        "max": 2,
+        "value": 1,
+        "step": 0.01,
+        "type": "number"
+      },
+      {
+        "key": "angle",
+        "label": "Angle (degrees)",
+        "min": -180,
+        "max": 180,
+        "value": 45,
+        "step": 1,
+        "type": "number"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Style",
+    "key": "bevel_outer",
+    "name": "Bevel (Outer)",
+    "controls": [
+      {
+        "key": "radius",
+        "label": "Radius / distance (px)",
+        "min": 0,
+        "max": 100,
+        "value": 8,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "strength",
+        "label": "Strength",
+        "min": 0,
+        "max": 2,
+        "value": 1,
+        "step": 0.01,
+        "type": "number"
+      },
+      {
+        "key": "angle",
+        "label": "Angle (degrees)",
+        "min": -180,
+        "max": 180,
+        "value": 45,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "color",
+        "label": "Color / foreground",
+        "type": "color",
+        "text": "#306EBB"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Style",
+    "key": "emboss",
+    "name": "Emboss",
+    "controls": [
+      {
+        "key": "strength",
+        "label": "Strength",
+        "min": 0,
+        "max": 2,
+        "value": 1,
+        "step": 0.01,
+        "type": "number"
+      },
+      {
+        "key": "angle",
+        "label": "Angle (degrees)",
+        "min": -180,
+        "max": 180,
+        "value": 45,
+        "step": 1,
+        "type": "number"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Style",
+    "key": "relief",
+    "name": "Relief",
+    "controls": [
+      {
+        "key": "radius",
+        "label": "Radius / distance (px)",
+        "min": 0,
+        "max": 100,
+        "value": 8,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "strength",
+        "label": "Strength",
+        "min": 0,
+        "max": 2,
+        "value": 1,
+        "step": 0.01,
+        "type": "number"
+      },
+      {
+        "key": "angle",
+        "label": "Angle (degrees)",
+        "min": -180,
+        "max": 180,
+        "value": 45,
+        "step": 1,
+        "type": "number"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Style",
+    "key": "relief_hq",
+    "name": "Relief HQ",
+    "controls": [
+      {
+        "key": "radius",
+        "label": "Radius / distance (px)",
+        "min": 0,
+        "max": 100,
+        "value": 8,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "strength",
+        "label": "Strength",
+        "min": 0,
+        "max": 2,
+        "value": 1,
+        "step": 0.01,
+        "type": "number"
+      },
+      {
+        "key": "angle",
+        "label": "Angle (degrees)",
+        "min": -180,
+        "max": 180,
+        "value": 45,
+        "step": 1,
+        "type": "number"
+      }
+    ],
+    "note": "Local shaded relief. Does not use ibis Paint’s smart depth service."
+  },
+  {
+    "category": "Style",
+    "key": "waterdrop",
+    "name": "Waterdrop (Rounded)",
+    "controls": [
+      {
+        "key": "radius",
+        "label": "Radius / distance (px)",
+        "min": 0,
+        "max": 100,
+        "value": 8,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "strength",
+        "label": "Strength",
+        "min": 0,
+        "max": 2,
+        "value": 1,
+        "step": 0.01,
+        "type": "number"
+      },
+      {
+        "key": "angle",
+        "label": "Angle (degrees)",
+        "min": -180,
+        "max": 180,
+        "value": 45,
+        "step": 1,
+        "type": "number"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Style",
+    "key": "stroke_outer",
+    "name": "Stroke (Outer)",
+    "controls": [
+      {
+        "key": "radius",
+        "label": "Radius / distance (px)",
+        "min": 0,
+        "max": 100,
+        "value": 8,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "color",
+        "label": "Color / foreground",
+        "type": "color",
+        "text": "#306EBB"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Style",
+    "key": "outer_glow",
+    "name": "Glow (Outer)",
+    "controls": [
+      {
+        "key": "radius",
+        "label": "Radius / distance (px)",
+        "min": 0,
+        "max": 100,
+        "value": 8,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "strength",
+        "label": "Strength",
+        "min": 0,
+        "max": 2,
+        "value": 1,
+        "step": 0.01,
+        "type": "number"
+      },
+      {
+        "key": "color",
+        "label": "Color / foreground",
+        "type": "color",
+        "text": "#306EBB"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Style",
+    "key": "satin",
+    "name": "Satin",
+    "controls": [
+      {
+        "key": "radius",
+        "label": "Radius / distance (px)",
+        "min": 0,
+        "max": 100,
+        "value": 8,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "strength",
+        "label": "Strength",
+        "min": 0,
+        "max": 2,
+        "value": 1,
+        "step": 0.01,
+        "type": "number"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Style",
+    "key": "drop_shadow",
+    "name": "Drop Shadow",
+    "controls": [
+      {
+        "key": "radius",
+        "label": "Radius / distance (px)",
+        "min": 0,
+        "max": 100,
+        "value": 8,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "angle",
+        "label": "Angle (degrees)",
+        "min": -180,
+        "max": 180,
+        "value": 45,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "color",
+        "label": "Color / foreground",
+        "type": "color",
+        "text": "#306EBB"
+      },
+      {
+        "key": "softness",
+        "label": "Softness (px)",
+        "min": 0,
+        "max": 50,
+        "value": 4,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "strength",
+        "label": "Opacity",
+        "min": 0,
+        "max": 1,
+        "value": 0.75,
+        "step": 0.01,
+        "type": "number"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Style",
+    "key": "extrude",
+    "name": "Extrude",
+    "controls": [
+      {
+        "key": "radius",
+        "label": "Radius / distance (px)",
+        "min": 0,
+        "max": 100,
+        "value": 8,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "angle",
+        "label": "Angle (degrees)",
+        "min": -180,
+        "max": 180,
+        "value": 45,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "color",
+        "label": "Color / foreground",
+        "type": "color",
+        "text": "#306EBB"
+      },
+      {
+        "key": "strength",
+        "label": "Opacity",
+        "min": 0,
+        "max": 1,
+        "value": 1,
+        "step": 0.01,
+        "type": "number"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Style",
+    "key": "god_rays",
+    "name": "God Rays",
+    "controls": [
+      {
+        "key": "radius",
+        "label": "Radius / distance (px)",
+        "min": 0,
+        "max": 100,
+        "value": 8,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "center_x",
+        "label": "Center X",
+        "min": 0,
+        "max": 1,
+        "value": 0.5,
+        "step": 0.01,
+        "type": "number"
+      },
+      {
+        "key": "center_y",
+        "label": "Center Y",
+        "min": 0,
+        "max": 1,
+        "value": 0.5,
+        "step": 0.01,
+        "type": "number"
+      },
+      {
+        "key": "strength",
+        "label": "Strength",
+        "min": 0,
+        "max": 2,
+        "value": 1,
+        "step": 0.01,
+        "type": "number"
+      },
+      {
+        "key": "color",
+        "label": "Color / foreground",
+        "type": "color",
+        "text": "#306EBB"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Draw",
+    "key": "parallel_gradient",
+    "name": "Parallel Gradation",
+    "controls": [
+      {
+        "key": "angle",
+        "label": "Angle (degrees)",
+        "min": -180,
+        "max": 180,
+        "value": 45,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "center_x",
+        "label": "Center X",
+        "min": 0,
+        "max": 1,
+        "value": 0.5,
+        "step": 0.01,
+        "type": "number"
+      },
+      {
+        "key": "center_y",
+        "label": "Center Y",
+        "min": 0,
+        "max": 1,
+        "value": 0.5,
+        "step": 0.01,
+        "type": "number"
+      },
+      {
+        "key": "color",
+        "label": "Color / foreground",
+        "type": "color",
+        "text": "#306EBB"
+      },
+      {
+        "key": "color2",
+        "label": "Second color / source color",
+        "type": "color",
+        "text": "#F7CF79"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Draw",
+    "key": "concentric_gradient",
+    "name": "Concentric Gradation",
+    "controls": [
+      {
+        "key": "center_x",
+        "label": "Center X",
+        "min": 0,
+        "max": 1,
+        "value": 0.5,
+        "step": 0.01,
+        "type": "number"
+      },
+      {
+        "key": "center_y",
+        "label": "Center Y",
+        "min": 0,
+        "max": 1,
+        "value": 0.5,
+        "step": 0.01,
+        "type": "number"
+      },
+      {
+        "key": "color",
+        "label": "Color / foreground",
+        "type": "color",
+        "text": "#306EBB"
+      },
+      {
+        "key": "color2",
+        "label": "Second color / source color",
+        "type": "color",
+        "text": "#F7CF79"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Draw",
+    "key": "radial_gradient",
+    "name": "Radial Line Gradation",
+    "controls": [
+      {
+        "key": "angle",
+        "label": "Angle (degrees)",
+        "min": -180,
+        "max": 180,
+        "value": 45,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "center_x",
+        "label": "Center X",
+        "min": 0,
+        "max": 1,
+        "value": 0.5,
+        "step": 0.01,
+        "type": "number"
+      },
+      {
+        "key": "center_y",
+        "label": "Center Y",
+        "min": 0,
+        "max": 1,
+        "value": 0.5,
+        "step": 0.01,
+        "type": "number"
+      },
+      {
+        "key": "color",
+        "label": "Color / foreground",
+        "type": "color",
+        "text": "#306EBB"
+      },
+      {
+        "key": "color2",
+        "label": "Second color / source color",
+        "type": "color",
+        "text": "#F7CF79"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Draw",
+    "key": "radial_lines",
+    "name": "Radial Line",
+    "controls": [
+      {
+        "key": "angle",
+        "label": "Angle (degrees)",
+        "min": -180,
+        "max": 180,
+        "value": 45,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "center_x",
+        "label": "Center X",
+        "min": 0,
+        "max": 1,
+        "value": 0.5,
+        "step": 0.01,
+        "type": "number"
+      },
+      {
+        "key": "center_y",
+        "label": "Center Y",
+        "min": 0,
+        "max": 1,
+        "value": 0.5,
+        "step": 0.01,
+        "type": "number"
+      },
+      {
+        "key": "color",
+        "label": "Color / foreground",
+        "type": "color",
+        "text": "#306EBB"
+      },
+      {
+        "key": "count",
+        "label": "Line count",
+        "min": 3,
+        "max": 200,
+        "value": 40,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "width",
+        "label": "Line width fraction",
+        "min": 0.01,
+        "max": 0.9,
+        "value": 0.2,
+        "step": 0.01,
+        "type": "number"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Draw",
+    "key": "speed_lines",
+    "name": "Speed Line",
+    "controls": [
+      {
+        "key": "angle",
+        "label": "Angle (degrees)",
+        "min": -180,
+        "max": 180,
+        "value": 45,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "size",
+        "label": "Cell / pattern size (px)",
+        "min": 2,
+        "max": 150,
+        "value": 16,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "color",
+        "label": "Color / foreground",
+        "type": "color",
+        "text": "#306EBB"
+      },
+      {
+        "key": "width",
+        "label": "Line width fraction",
+        "min": 0.01,
+        "max": 0.9,
+        "value": 0.15,
+        "step": 0.01,
+        "type": "number"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Draw",
+    "key": "clouds",
+    "name": "Clouds",
+    "controls": [
+      {
+        "key": "size",
+        "label": "Cell / pattern size (px)",
+        "min": 2,
+        "max": 150,
+        "value": 16,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "seed",
+        "label": "Pattern seed",
+        "min": 0,
+        "max": 9999,
+        "value": 12,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "color",
+        "label": "Color / foreground",
+        "type": "color",
+        "text": "#306EBB"
+      },
+      {
+        "key": "color2",
+        "label": "Second color / source color",
+        "type": "color",
+        "text": "#F7CF79"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Draw",
+    "key": "qr",
+    "name": "QR Code",
+    "controls": [
+      {
+        "key": "text",
+        "label": "QR text or URL",
+        "type": "text",
+        "text": "MeshDraw"
+      }
+    ],
+    "note": "Black and white QR code with a quiet border. Keep effect opacity at 100% for scanning."
+  },
+  {
+    "category": "Smart · local alternatives",
+    "key": "watercolor",
+    "name": "Watercolor Filter",
+    "controls": [
+      {
+        "key": "radius",
+        "label": "Radius / distance (px)",
+        "min": 0,
+        "max": 100,
+        "value": 8,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "strength",
+        "label": "Strength",
+        "min": 0,
+        "max": 1,
+        "value": 1,
+        "step": 0.01,
+        "type": "number"
+      },
+      {
+        "key": "levels",
+        "label": "Color levels",
+        "min": 2,
+        "max": 32,
+        "value": 5,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "seed",
+        "label": "Pattern seed",
+        "min": 0,
+        "max": 9999,
+        "value": 12,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "grain",
+        "label": "Paper grain",
+        "min": 0,
+        "max": 0.3,
+        "value": 0.08,
+        "step": 0.01,
+        "type": "number"
+      }
+    ],
+    "note": "Offline watercolor approximation; does not use ibis Paint’s smart service."
+  },
+  {
+    "category": "Smart · local alternatives",
+    "key": "background_remove",
+    "name": "Background Removal",
+    "controls": [
+      {
+        "key": "color",
+        "label": "Background color",
+        "type": "color",
+        "text": "#FFFFFF"
+      },
+      {
+        "key": "tolerance",
+        "label": "Color tolerance",
+        "min": 0.01,
+        "max": 1,
+        "value": 0.2,
+        "step": 0.01,
+        "type": "number"
+      }
+    ],
+    "note": "Offline removal of matching background connected to canvas edges. Not AI subject segmentation; complex backgrounds may need your selection brush."
+  },
+  {
+    "category": "Artistic",
+    "key": "anime",
+    "name": "Anime Background",
+    "controls": [
+      {
+        "key": "radius",
+        "label": "Radius / distance (px)",
+        "min": 0,
+        "max": 100,
+        "value": 8,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "strength",
+        "label": "Strength",
+        "min": 0,
+        "max": 1,
+        "value": 1,
+        "step": 0.01,
+        "type": "number"
+      },
+      {
+        "key": "levels",
+        "label": "Color levels",
+        "min": 2,
+        "max": 32,
+        "value": 5,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "detail",
+        "label": "Edge detail",
+        "min": 0.1,
+        "max": 10,
+        "value": 3,
+        "step": 0.01,
+        "type": "number"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Artistic",
+    "key": "manga",
+    "name": "Manga Background",
+    "controls": [
+      {
+        "key": "size",
+        "label": "Cell / pattern size (px)",
+        "min": 2,
+        "max": 150,
+        "value": 16,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "detail",
+        "label": "Edge detail",
+        "min": 0.1,
+        "max": 10,
+        "value": 3,
+        "step": 0.01,
+        "type": "number"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Artistic",
+    "key": "color_shift",
+    "name": "Chromatic Aberration · Color Shift",
+    "controls": [
+      {
+        "key": "radius",
+        "label": "Radius / distance (px)",
+        "min": 0,
+        "max": 100,
+        "value": 8,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "angle",
+        "label": "Angle (degrees)",
+        "min": -180,
+        "max": 180,
+        "value": 45,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "color",
+        "label": "Color / foreground",
+        "type": "color",
+        "text": "#306EBB"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Artistic",
+    "key": "rgb_shift",
+    "name": "Chromatic Aberration · RGB Shift",
+    "controls": [
+      {
+        "key": "radius",
+        "label": "Radius / distance (px)",
+        "min": 0,
+        "max": 100,
+        "value": 8,
+        "step": 1,
+        "type": "number"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Artistic",
+    "key": "glitch",
+    "name": "Glitch",
+    "controls": [
+      {
+        "key": "radius",
+        "label": "Radius / distance (px)",
+        "min": 0,
+        "max": 100,
+        "value": 8,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "size",
+        "label": "Cell / pattern size (px)",
+        "min": 2,
+        "max": 150,
+        "value": 16,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "seed",
+        "label": "Pattern seed",
+        "min": 0,
+        "max": 9999,
+        "value": 12,
+        "step": 1,
+        "type": "number"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Artistic",
+    "key": "noise",
+    "name": "Noise",
+    "controls": [
+      {
+        "key": "amount",
+        "label": "Noise amount",
+        "min": 0,
+        "max": 0.5,
+        "value": 0.15,
+        "step": 0.01,
+        "type": "number"
+      },
+      {
+        "key": "seed",
+        "label": "Pattern seed",
+        "min": 0,
+        "max": 9999,
+        "value": 12,
+        "step": 1,
+        "type": "number"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Artistic",
+    "key": "retro",
+    "name": "Retro Game",
+    "controls": [
+      {
+        "key": "size",
+        "label": "Cell / pattern size (px)",
+        "min": 2,
+        "max": 150,
+        "value": 16,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "levels",
+        "label": "Color levels",
+        "min": 2,
+        "max": 32,
+        "value": 5,
+        "step": 1,
+        "type": "number"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Artistic",
+    "key": "chrome",
+    "name": "Chrome",
+    "controls": [
+      {
+        "key": "radius",
+        "label": "Radius / distance (px)",
+        "min": 0,
+        "max": 100,
+        "value": 8,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "strength",
+        "label": "Strength",
+        "min": 0,
+        "max": 2,
+        "value": 1,
+        "step": 0.01,
+        "type": "number"
+      },
+      {
+        "key": "angle",
+        "label": "Angle (degrees)",
+        "min": -180,
+        "max": 180,
+        "value": 45,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "frequency",
+        "label": "Metal bands",
+        "min": 1,
+        "max": 30,
+        "value": 12,
+        "step": 0.01,
+        "type": "number"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Artistic",
+    "key": "bloom",
+    "name": "Bloom",
+    "controls": [
+      {
+        "key": "radius",
+        "label": "Radius / distance (px)",
+        "min": 0,
+        "max": 100,
+        "value": 8,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "strength",
+        "label": "Strength",
+        "min": 0,
+        "max": 2,
+        "value": 1,
+        "step": 0.01,
+        "type": "number"
+      },
+      {
+        "key": "color",
+        "label": "Color / foreground",
+        "type": "color",
+        "text": "#306EBB"
+      },
+      {
+        "key": "threshold",
+        "label": "Highlight threshold",
+        "min": 0,
+        "max": 0.99,
+        "value": 0.6,
+        "step": 0.01,
+        "type": "number"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Artistic",
+    "key": "cross",
+    "name": "Cross Filter",
+    "controls": [
+      {
+        "key": "radius",
+        "label": "Radius / distance (px)",
+        "min": 0,
+        "max": 100,
+        "value": 8,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "strength",
+        "label": "Strength",
+        "min": 0,
+        "max": 2,
+        "value": 1,
+        "step": 0.01,
+        "type": "number"
+      },
+      {
+        "key": "angle",
+        "label": "Angle (degrees)",
+        "min": -180,
+        "max": 180,
+        "value": 45,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "color",
+        "label": "Color / foreground",
+        "type": "color",
+        "text": "#306EBB"
+      },
+      {
+        "key": "threshold",
+        "label": "Highlight threshold",
+        "min": 0,
+        "max": 0.99,
+        "value": 0.6,
+        "step": 0.01,
+        "type": "number"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Artistic",
+    "key": "sheer",
+    "name": "Sheer",
+    "controls": [
+      {
+        "key": "size",
+        "label": "Cell / pattern size (px)",
+        "min": 2,
+        "max": 150,
+        "value": 16,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "strength",
+        "label": "Strength",
+        "min": 0,
+        "max": 2,
+        "value": 1,
+        "step": 0.01,
+        "type": "number"
+      },
+      {
+        "key": "color",
+        "label": "Color / foreground",
+        "type": "color",
+        "text": "#306EBB"
+      },
+      {
+        "key": "shape",
+        "label": "Shape: 0 cross · 1 line · 2 circle · 3 square",
+        "min": 0,
+        "max": 3,
+        "value": 0,
+        "step": 1,
+        "type": "number"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Artistic",
+    "key": "oil_paint",
+    "name": "Oil Paint",
+    "controls": [
+      {
+        "key": "radius",
+        "label": "Radius / distance (px)",
+        "min": 0,
+        "max": 100,
+        "value": 8,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "strength",
+        "label": "Strength",
+        "min": 0,
+        "max": 1,
+        "value": 1,
+        "step": 0.01,
+        "type": "number"
+      },
+      {
+        "key": "levels",
+        "label": "Color levels",
+        "min": 2,
+        "max": 32,
+        "value": 5,
+        "step": 1,
+        "type": "number"
+      }
+    ],
+    "note": "Offline smoothing, color quantization, and brush relief."
+  },
+  {
+    "category": "Pixelate",
+    "key": "crystalize",
+    "name": "Pixelate Crystalize",
+    "controls": [
+      {
+        "key": "size",
+        "label": "Cell / pattern size (px)",
+        "min": 2,
+        "max": 150,
+        "value": 16,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "seed",
+        "label": "Pattern seed",
+        "min": 0,
+        "max": 9999,
+        "value": 12,
+        "step": 1,
+        "type": "number"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Pixelate",
+    "key": "hex",
+    "name": "Hexagonal Pixelate",
+    "controls": [
+      {
+        "key": "size",
+        "label": "Cell / pattern size (px)",
+        "min": 2,
+        "max": 150,
+        "value": 16,
+        "step": 1,
+        "type": "number"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Pixelate",
+    "key": "square",
+    "name": "Square Pixelate",
+    "controls": [
+      {
+        "key": "size",
+        "label": "Cell / pattern size (px)",
+        "min": 2,
+        "max": 150,
+        "value": 16,
+        "step": 1,
+        "type": "number"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Pixelate",
+    "key": "triangle",
+    "name": "Triangular Pixelate",
+    "controls": [
+      {
+        "key": "size",
+        "label": "Cell / pattern size (px)",
+        "min": 2,
+        "max": 150,
+        "value": 16,
+        "step": 1,
+        "type": "number"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Pixelate",
+    "key": "pointillize",
+    "name": "Pointillize",
+    "controls": [
+      {
+        "key": "size",
+        "label": "Cell / pattern size (px)",
+        "min": 2,
+        "max": 150,
+        "value": 16,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "seed",
+        "label": "Pattern seed",
+        "min": 0,
+        "max": 9999,
+        "value": 12,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "dot_size",
+        "label": "Dot radius fraction",
+        "min": 0.05,
+        "max": 0.7,
+        "value": 0.4,
+        "step": 0.01,
+        "type": "number"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Pixelate",
+    "key": "dots_hex",
+    "name": "Dots (Hexagonal)",
+    "controls": [
+      {
+        "key": "size",
+        "label": "Cell / pattern size (px)",
+        "min": 2,
+        "max": 150,
+        "value": 16,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "dot_size",
+        "label": "Dot radius fraction",
+        "min": 0.05,
+        "max": 0.5,
+        "value": 0.4,
+        "step": 0.01,
+        "type": "number"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Pixelate",
+    "key": "dots_square",
+    "name": "Dots (Square)",
+    "controls": [
+      {
+        "key": "size",
+        "label": "Cell / pattern size (px)",
+        "min": 2,
+        "max": 150,
+        "value": 16,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "dot_size",
+        "label": "Dot radius fraction",
+        "min": 0.05,
+        "max": 0.5,
+        "value": 0.4,
+        "step": 0.01,
+        "type": "number"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Transform",
+    "key": "expansion",
+    "name": "Expansion",
+    "controls": [
+      {
+        "key": "zoom",
+        "label": "Scale",
+        "min": 0.1,
+        "max": 4,
+        "value": 1.25,
+        "step": 0.01,
+        "type": "number"
+      },
+      {
+        "key": "center_x",
+        "label": "Center X",
+        "min": 0,
+        "max": 1,
+        "value": 0.5,
+        "step": 0.01,
+        "type": "number"
+      },
+      {
+        "key": "center_y",
+        "label": "Center Y",
+        "min": 0,
+        "max": 1,
+        "value": 0.5,
+        "step": 0.01,
+        "type": "number"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Transform",
+    "key": "fisheye",
+    "name": "Fisheye Lens",
+    "controls": [
+      {
+        "key": "distortion",
+        "label": "Distortion",
+        "min": -0.8,
+        "max": 2,
+        "value": 0.5,
+        "step": 0.01,
+        "type": "number"
+      },
+      {
+        "key": "center_x",
+        "label": "Center X",
+        "min": 0,
+        "max": 1,
+        "value": 0.5,
+        "step": 0.01,
+        "type": "number"
+      },
+      {
+        "key": "center_y",
+        "label": "Center Y",
+        "min": 0,
+        "max": 1,
+        "value": 0.5,
+        "step": 0.01,
+        "type": "number"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Transform",
+    "key": "sphere",
+    "name": "Sphere Lens",
+    "controls": [
+      {
+        "key": "distortion",
+        "label": "Distortion",
+        "min": -0.8,
+        "max": 0.95,
+        "value": 0.5,
+        "step": 0.01,
+        "type": "number"
+      },
+      {
+        "key": "center_x",
+        "label": "Center X",
+        "min": 0,
+        "max": 1,
+        "value": 0.5,
+        "step": 0.01,
+        "type": "number"
+      },
+      {
+        "key": "center_y",
+        "label": "Center Y",
+        "min": 0,
+        "max": 1,
+        "value": 0.5,
+        "step": 0.01,
+        "type": "number"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Transform",
+    "key": "wave",
+    "name": "Wave",
+    "controls": [
+      {
+        "key": "radius",
+        "label": "Radius / distance (px)",
+        "min": 0,
+        "max": 100,
+        "value": 8,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "size",
+        "label": "Cell / pattern size (px)",
+        "min": 2,
+        "max": 150,
+        "value": 16,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "angle",
+        "label": "Angle (degrees)",
+        "min": -180,
+        "max": 180,
+        "value": 45,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "vertical",
+        "label": "Vertical wave",
+        "min": 0,
+        "max": 1,
+        "value": 0,
+        "step": 0.01,
+        "type": "number"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Transform",
+    "key": "ripple",
+    "name": "Ripple",
+    "controls": [
+      {
+        "key": "radius",
+        "label": "Radius / distance (px)",
+        "min": 0,
+        "max": 100,
+        "value": 8,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "size",
+        "label": "Cell / pattern size (px)",
+        "min": 2,
+        "max": 150,
+        "value": 16,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "angle",
+        "label": "Angle (degrees)",
+        "min": -180,
+        "max": 180,
+        "value": 45,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "center_x",
+        "label": "Center X",
+        "min": 0,
+        "max": 1,
+        "value": 0.5,
+        "step": 0.01,
+        "type": "number"
+      },
+      {
+        "key": "center_y",
+        "label": "Center Y",
+        "min": 0,
+        "max": 1,
+        "value": 0.5,
+        "step": 0.01,
+        "type": "number"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Transform",
+    "key": "twirl",
+    "name": "Twirl",
+    "controls": [
+      {
+        "key": "angle",
+        "label": "Angle (degrees)",
+        "min": -720,
+        "max": 720,
+        "value": 90,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "center_x",
+        "label": "Center X",
+        "min": 0,
+        "max": 1,
+        "value": 0.5,
+        "step": 0.01,
+        "type": "number"
+      },
+      {
+        "key": "center_y",
+        "label": "Center Y",
+        "min": 0,
+        "max": 1,
+        "value": 0.5,
+        "step": 0.01,
+        "type": "number"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Transform",
+    "key": "polar",
+    "name": "Polar Coordinates",
+    "controls": [
+      {
+        "key": "center_x",
+        "label": "Center X",
+        "min": 0,
+        "max": 1,
+        "value": 0.5,
+        "step": 0.01,
+        "type": "number"
+      },
+      {
+        "key": "center_y",
+        "label": "Center Y",
+        "min": 0,
+        "max": 1,
+        "value": 0.5,
+        "step": 0.01,
+        "type": "number"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Frame",
+    "key": "table",
+    "name": "Table",
+    "controls": [
+      {
+        "key": "rows",
+        "label": "Rows",
+        "min": 1,
+        "max": 40,
+        "value": 4,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "columns",
+        "label": "Columns",
+        "min": 1,
+        "max": 40,
+        "value": 4,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "border",
+        "label": "Line width (px)",
+        "min": 1,
+        "max": 30,
+        "value": 2,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "color",
+        "label": "Color / foreground",
+        "type": "color",
+        "text": "#306EBB"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Frame",
+    "key": "blur_frame",
+    "name": "Blur Frame",
+    "controls": [
+      {
+        "key": "radius",
+        "label": "Radius / distance (px)",
+        "min": 0,
+        "max": 100,
+        "value": 8,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "border",
+        "label": "Frame width (px)",
+        "min": 1,
+        "max": 200,
+        "value": 24,
+        "step": 1,
+        "type": "number"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "category": "Movie · still effects",
+    "key": "rain",
+    "name": "Rain",
+    "controls": [
+      {
+        "key": "radius",
+        "label": "Radius / distance (px)",
+        "min": 0,
+        "max": 100,
+        "value": 8,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "angle",
+        "label": "Angle (degrees)",
+        "min": -180,
+        "max": 180,
+        "value": 45,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "color",
+        "label": "Color / foreground",
+        "type": "color",
+        "text": "#306EBB"
+      },
+      {
+        "key": "seed",
+        "label": "Pattern seed",
+        "min": 0,
+        "max": 9999,
+        "value": 12,
+        "step": 1,
+        "type": "number"
+      },
+      {
+        "key": "density",
+        "label": "Rain density",
+        "min": 0.001,
+        "max": 0.05,
+        "value": 0.006,
+        "step": 0.001,
+        "type": "number"
+      },
+      {
+        "key": "strength",
+        "label": "Opacity",
+        "min": 0,
+        "max": 1,
+        "value": 0.7,
+        "step": 0.01,
+        "type": "number"
+      }
+    ],
+    "note": "A single rain frame for this drawing. Change Pattern seed for a different frame; MeshDraw does not export filter animations."
+  }
+]
