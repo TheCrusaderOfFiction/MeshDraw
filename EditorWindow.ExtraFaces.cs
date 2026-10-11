@@ -32,7 +32,7 @@ public partial class EditorWindow
         if(face==null) return;
         ExtraFaceName.Text=face.Name;ExtraFaceType.SelectedIndex=face.IsSection ? 1 : 0;
         ExtraFaceYaw.Text=face.Yaw.ToString(CultureInfo.InvariantCulture);ExtraFacePitch.Text=face.Pitch.ToString(CultureInfo.InvariantCulture);
-        ExtraFaceOffset.Value=face.Offset;
+        ExtraFaceOffset.Value=face.Offset;ExtraFaceSectionMode.SelectedIndex=face.SectionMode=="Sections"?0:face.SectionMode=="Blend"?1:2;ExtraFaceReverse.IsChecked=face.ReverseSection;
     }
     private FaceDefinition? ReadExtraFace(string id)
     {
@@ -41,7 +41,8 @@ public partial class EditorWindow
             || !double.IsFinite(yaw) || Math.Abs(yaw)>180 || !double.TryParse(ExtraFacePitch.Text,NumberStyles.Float,CultureInfo.InvariantCulture,out var pitch)
             || !double.IsFinite(pitch) || Math.Abs(pitch)>90)
         {Status.Text="Enter a name, a yaw from −180 to 180°, and a pitch from −90 to 90°.";return null;}
-        return new(id,name,yaw,pitch,ExtraFaceOffset.Value,ExtraFaceType.SelectedIndex==1);
+        var old=extraFaces.FirstOrDefault(f=>f.Id==id);
+        return new(id,name,yaw,pitch,ExtraFaceOffset.Value,ExtraFaceType.SelectedIndex==1,old?.MoveX ?? 0,old?.MoveY ?? 0,old?.MoveZ ?? 0,old?.Roll ?? 0,ExtraFaceSectionMode.SelectedIndex==0?"Sections":ExtraFaceSectionMode.SelectedIndex==1?"Blend":"Whole",ExtraFaceReverse.IsChecked==true);
     }
     private void AddExtraFace(object sender,RoutedEventArgs e)
     {
@@ -70,13 +71,14 @@ public partial class EditorWindow
     internal static (Vector3D u,Vector3D v,Vector3D normal) FaceBasis(FaceDefinition face)
     {
         double y=face.Yaw*Math.PI/180,p=face.Pitch*Math.PI/180;
-        return (new(Math.Cos(y),0,-Math.Sin(y)),new(-Math.Sin(y)*Math.Sin(p),Math.Cos(p),-Math.Cos(y)*Math.Sin(p)),
-            new(Math.Sin(y)*Math.Cos(p),Math.Sin(p),Math.Cos(y)*Math.Cos(p)));
+        var u=new Vector3D(Math.Cos(y),0,-Math.Sin(y));var v=new Vector3D(-Math.Sin(y)*Math.Sin(p),Math.Cos(p),-Math.Cos(y)*Math.Sin(p));
+        double r=face.Roll*Math.PI/180;
+        return (u*Math.Cos(r)+v*Math.Sin(r),v*Math.Cos(r)-u*Math.Sin(r),new(Math.Sin(y)*Math.Cos(p),Math.Sin(p),Math.Cos(y)*Math.Cos(p)));
     }
     private Point3D FacePlanePoint(string id,double u,double v)
     {
         var face=extraFaces.FirstOrDefault(f=>f.Id==id);if(face==null) return OutlinePlanePoint(id,u,v);
         var basis=FaceBasis(face);double radius=Math.Abs(basis.normal.X)+Math.Abs(basis.normal.Y)+Math.Abs(basis.normal.Z);
-        return new Point3D()+basis.u*(2*u-1)+basis.v*(1-2*v)+basis.normal*radius*(face.IsSection ? face.Offset : 1);
+        return new Point3D(face.MoveX,face.MoveY,face.MoveZ)+basis.u*(2*u-1)+basis.v*(1-2*v)+basis.normal*radius*(face.IsSection ? face.Offset : 1);
     }
 }

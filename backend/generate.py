@@ -26,6 +26,15 @@ def silhouette(path):
     # Closing tiny gaps helps tablet strokes; larger gaps must be fixed by the artist.
     ink = ndimage.binary_closing(ink, iterations=2)
     mask = ndimage.binary_fill_holes(ink)
+    # Only closed components define object dimensions. Isolated dots and open
+    # strokes otherwise shift bounding-box centers and can erase the shared hull.
+    components,count=ndimage.label(mask)
+    enclosed=mask & ~ink
+    filled_counts=np.bincount(components[enclosed],minlength=count+1)
+    ink_counts=np.bincount(components[ink],minlength=count+1)
+    keep=filled_counts>=np.maximum(16,ink_counts*.05);keep[0]=False
+    mask=keep[components]
+    ink &= mask
     if int(mask.sum()) < 100 or int(mask.sum()) < int(ink.sum()) * 1.2:
         raise ValueError(f'{path.stem.title()}: draw a closed outer outline before generating.')
     return rgb, mask
@@ -194,7 +203,7 @@ def finish_generation(job_path, blender, mesh, masks):
         'fbx': str(result), 'asset': str(bundle), 'outputType': job['outputType'], 'vertices': summary.get('renderVertices',len(mesh.vertices)),
         'vertexLimit':summary.get('vertexLimit',job.get('vertexLimit',50000)), 'geometryVertices':summary.get('geometryVertices',len(mesh.vertices)),
         'faces': summary.get('triangles',len(mesh.faces)), 'drawingFit': mesh.metadata.get('drawingFit'), 'generationMethod': mesh.metadata.get('generationMethod','AI with six-view constraints'), 'textures': summary.get('textures',{}), 'rig':summary.get('rig'),
-        'edgeGuidance':mesh.metadata.get('edgeGuidance'),'edgeOptimization':summary.get('edgeOptimization'),
+        'roundProfiles':mesh.metadata.get('roundProfiles'),'edgeGuidance':mesh.metadata.get('edgeGuidance'),'edgeOptimization':summary.get('edgeOptimization'),
         'aiViews': ['front', 'back', 'left', 'right'], 'constraintViews': list(masks)}))
     status(f'Complete: {bundle}')
     return bundle

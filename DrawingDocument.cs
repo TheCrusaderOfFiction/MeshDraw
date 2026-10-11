@@ -58,7 +58,7 @@ public sealed record LayerData(string Id, string Name, LayerKind Kind, bool Visi
 public sealed record JointData(string Id, double X, double Y, double Z);
 public sealed record BoneData(string Id, string Name, string Head, string Tail, string? Parent);
 public sealed record RigData(List<JointData> Joints, List<BoneData> Bones);
-public sealed record FaceDefinition(string Id, string Name, double Yaw=0, double Pitch=0, double Offset=0, bool IsSection=false);
+public sealed record FaceDefinition(string Id, string Name, double Yaw=0, double Pitch=0, double Offset=0, bool IsSection=false, double MoveX=0, double MoveY=0, double MoveZ=0, double Roll=0, string SectionMode="Whole", bool ReverseSection=false);
 public sealed record EdgeGuideData(string Id,string Kind,double X1,double Y1,double X2,double Y2,double Radius=8);
 public sealed record EditorDocument(int Version, int OutputType, Dictionary<string,List<LayerData>> Layers, RigData Skeleton, int CanvasWidth=640, int CanvasHeight=640, string SkeletonType="Custom", List<FaceDefinition>? ExtraFaces=null, Dictionary<string,string>? Selections=null, int VertexLimit=50000, Dictionary<string,List<EdgeGuideData>>? EdgeGuides=null);
 
@@ -116,7 +116,7 @@ public static class DrawingDocument
         foreach(var face in document.ExtraFaces ?? [])
             if(face==null || !System.Text.RegularExpressions.Regex.IsMatch(face.Id ?? "", "^custom_[a-f0-9]{32}$") || !faceIds.Add(face.Id!)
                 || string.IsNullOrWhiteSpace(face.Name) || face.Name.Length>40 || !double.IsFinite(face.Yaw) || Math.Abs(face.Yaw)>180
-                || !double.IsFinite(face.Pitch) || Math.Abs(face.Pitch)>90 || !double.IsFinite(face.Offset) || Math.Abs(face.Offset)>.95)
+                || !double.IsFinite(face.Pitch) || Math.Abs(face.Pitch)>90 || !double.IsFinite(face.Offset) || Math.Abs(face.Offset)>.95 || !double.IsFinite(face.MoveX) || Math.Abs(face.MoveX)>2 || !double.IsFinite(face.MoveY) || Math.Abs(face.MoveY)>2 || !double.IsFinite(face.MoveZ) || Math.Abs(face.MoveZ)>2 || !double.IsFinite(face.Roll) || Math.Abs(face.Roll)>180 || face.SectionMode is not ("Whole" or "Sections" or "Blend"))
                 throw new InvalidDataException("Invalid extra face settings.");
         var ids = new HashSet<string>();
         foreach (var name in faceIds)

@@ -75,11 +75,11 @@ def paint_material(mesh, folder, size=1024, prepared=False):
         source_unit=original*2-np.asarray(extra_space['extent'])
     extra_projections={};extra_normals={}
     for face in extras:
-        yaw,pitch=np.deg2rad([face['Yaw'],face['Pitch']])
-        horizontal=np.array([np.cos(yaw),0,-np.sin(yaw)])
-        vertical=np.array([-np.sin(yaw)*np.sin(pitch),np.cos(pitch),-np.cos(yaw)*np.sin(pitch)])
-        normal=np.array([np.sin(yaw)*np.cos(pitch),np.sin(pitch),np.cos(yaw)*np.cos(pitch)])
-        extra_projections[face['Id']]=np.column_stack((source_unit@horizontal,source_unit@vertical))
+        from face_math import face_basis
+        horizontal,vertical,normal=face_basis(face)
+        extent=np.asarray(extra_space['extent']) if extra_space else np.ones(3)
+        shifted=source_unit-np.array([face.get(k,0) for k in ('MoveX','MoveY','MoveZ')])*extent
+        extra_projections[face['Id']]=np.column_stack((shifted@horizontal,shifted@vertical))
         # Source X,Y,Z -> Blender X,-Z,Y.
         extra_normals[face['Id']]=normal[[0,2,1]]*np.array([1,-1,1])
     atlases = {kind: np.broadcast_to(np.array((*DEFAULTS[kind],1),dtype=np.float32),(size,size,4)).copy() for kind in maps}
@@ -119,7 +119,8 @@ def paint_material(mesh, folder, size=1024, prepared=False):
             pixels = channels[painted_view]; box = bounds.get(painted_view,[0,0,pixels.shape[1]-1,pixels.shape[0]-1])
             if painted_view in extra_projections:
                 scale=extra_space['pixelScale'] if extra_space else max(pixels.shape[:2])
-                selected_projection=np.column_stack((.5+selected_projection[:,0]*scale/(2*(pixels.shape[1]-1)),.5-selected_projection[:,1]*scale/(2*(pixels.shape[0]-1))))
+                image_center=extra_space.get('imageCenters',{}).get(painted_view,[(pixels.shape[1]-1)/2,(pixels.shape[0]-1)/2]) if extra_space else [(pixels.shape[1]-1)/2,(pixels.shape[0]-1)/2]
+                selected_projection=np.column_stack(((image_center[0]+selected_projection[:,0]*scale/2)/(pixels.shape[1]-1),(image_center[1]-selected_projection[:,1]*scale/2)/(pixels.shape[0]-1)))
             selected_projection=np.clip(selected_projection,0,1)
             sx = np.clip(np.rint(box[0]+selected_projection[:,0]*(box[2]-box[0])).astype(int),0,pixels.shape[1]-1)
             sy = np.clip(np.rint(box[1]+selected_projection[:,1]*(box[3]-box[1])).astype(int),0,pixels.shape[0]-1)

@@ -24,24 +24,26 @@ def validate_guides(guides,masks):
     return result
 
 
-def guide_frame(name,masks,extent,faces,pixel_scale):
+def guide_frame(name,masks,extent,faces,pixel_scale,vertical_center=None):
     if name in AXES:
         a,b=AXES[name];u=np.eye(3)[a];v=np.eye(3)[b]
         if name in ('back','right'):u=-u
         if name in ('front','back','left','right','bottom'):v=-v
         yy,xx=np.nonzero(masks[name]);center=np.array([(xx.min()+xx.max())/2,(yy.min()+yy.max())/2])
+        if vertical_center is not None and b==1:center[1]=vertical_center
     else:
         face=next(f for f in faces if f['Id']==name);u,up,_=face_basis(face);v=-up
-        h,w=masks[name].shape;center=np.array([(w-1)/2,(h-1)/2])
+        from face_math import section_image_center
+        center=section_image_center(face,masks[name].shape,vertical_center)
     return u,v,center,np.asarray(extent)/2
 
 
-def prepare_guidance(guides,masks,extent,faces=None):
+def prepare_guidance(guides,masks,extent,faces=None,vertical_center=None):
     guides=validate_guides(guides,masks)
     scale=max(max(np.ptp(np.nonzero(m)[0])+1,np.ptp(np.nonzero(m)[1])+1) for n,m in masks.items() if n in AXES)
     contexts=[];ignored=[]
     for name,marks in guides.items():
-        u,v,pixel_center,center=guide_frame(name,masks,extent,faces or [],scale)
+        u,v,pixel_center,center=guide_frame(name,masks,extent,faces or [],scale,vertical_center)
         signed=distance_transform_edt(masks[name])-distance_transform_edt(~masks[name])
         for mark in marks:
             start=np.array([mark['X1'],mark['Y1']],dtype=float);end=np.array([mark['X2'],mark['Y2']],dtype=float);radius=mark['Radius']
@@ -49,15 +51,16 @@ def prepare_guidance(guides,masks,extent,faces=None):
             distance=map_coordinates(abs(signed),[samples[:,1],samples[:,0]],order=1,mode='constant',cval=1e6)
             if np.median(distance)>radius:
                 ignored.append({'id':mark['Id'],'reason':'Mark is not near the outline boundary.'});continue
-            point=center+(start[0]-pixel_center[0])/scale*u+(start[1]-pixel_center[1])/scale*v
+            shift=np.zeros(3) if name in AXES else np.array([next(f for f in (faces or []) if f['Id']==name).get(k,0) for k in ('MoveX','MoveY','MoveZ')])*extent/2
+            point=center+shift+(start[0]-pixel_center[0])/scale*u+(start[1]-pixel_center[1])/scale*v
             meta={'Id':mark['Id'],'Kind':mark['Kind'],'Point':point.tolist(),'Radius':radius/scale,'U':u.tolist(),'V':v.tolist()}
-            context=dict(mark=mark,u=u,v=v,center=center,pixel_center=pixel_center,start=start,end=end,scale=scale,meta=meta)
+            context=dict(mark=mark,u=u,v=v,center=center,pixel_center=pixel_center-np.array([shift@u,shift@v])*scale,start=start,end=end,scale=scale,meta=meta)
             face=next((f for f in (faces or []) if f['Id']==name),None)
             if face and face.get('IsSection',False):
                 _,_,normal=face_basis(face)
                 depth=face.get('Offset',0)*np.dot(abs(normal),extent)/2
                 point=point+normal*depth;meta['Point']=point.tolist()
-                meta['SectionNormal']=normal.tolist();context.update(section_normal=normal,section_depth=depth)
+                meta['SectionNormal']=normal.tolist();context.update(section_normal=normal,section_depth=depth+shift@normal)
             if mark['Kind']=='Straight':
                 direction=end-start;length=np.linalg.norm(direction);direction/=length;normal=np.array([-direction[1],direction[0]])
                 probes=np.array([start+direction*length*t+normal*d for t in (.25,.5,.75) for d in (-radius,radius)])

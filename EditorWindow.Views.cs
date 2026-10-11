@@ -38,7 +38,7 @@ public partial class EditorWindow
             else single.Child=surfaces[name];
         }
         AllViews.Rows=(drawingViews.Count+2)/3;
-        viewLayout=layout;Views.Visibility=layout=="single" ? Visibility.Visible : Visibility.Collapsed;
+        LoadPreviewFaces();viewLayout=layout;Views.Visibility=layout=="single" ? Visibility.Visible : Visibility.Collapsed;
         AllViews.Visibility=layout=="all" ? Visibility.Visible : Visibility.Collapsed;
         OutlinePreviewScreen.Visibility=layout=="3d" ? Visibility.Visible : Visibility.Collapsed;
         UpdateMultiViewSelection();if(layout=="3d") RenderOutlinePreview();
@@ -147,14 +147,22 @@ public partial class EditorWindow
             }
             fields[face.Id]=field;
         }
+        var regional=(extras ?? []).Where(f=>f.IsSection && f.SectionMode!="Whole").ToArray();
+        var signedFields=regional.ToDictionary(f=>f.Id,f=>SignedSectionMask(masks[f.Id]));
+        var blendFields=regional.Any(f=>f.SectionMode=="Blend")?DrawingDocument.ViewNames.ToDictionary(name=>name,name=>SignedSectionMask(masks[name])):new Dictionary<string,double[,]>();
+        double? BaseDistance(string name,double u,double v){if(!blendFields.TryGetValue(name,out var field))return null;return 2*field[Math.Clamp((int)(u*field.GetLength(0)),0,field.GetLength(0)-1),Math.Clamp((int)(v*field.GetLength(1)),0,field.GetLength(1)-1)]/Math.Max(field.GetLength(0),field.GetLength(1));}
+        double? PairDistance(string a,double u,double v,string b,double bu,double bv){var da=BaseDistance(a,u,v);var db=BaseDistance(b,bu,bv);return da.HasValue && db.HasValue?Math.Max(da.Value,db.Value):null;}
         bool Sample(string name,double u,double v) {var mask=masks[name];return mask[Math.Clamp((int)(u*mask.GetLength(0)),0,mask.GetLength(0)-1),Math.Clamp((int)(v*mask.GetLength(1)),0,mask.GetLength(1)-1)];}
         for(int x=0;x<n;x++) for(int y=0;y<n;y++) for(int z=0;z<n;z++)
         {
             double u=(x+.5)/n,v=(y+.5)/n,w=(z+.5)/n;
-            cells[x,y,z]=Sample("Front",u,1-v)&&Sample("Back",1-u,1-v)&&Sample("Left",w,1-v)&&Sample("Right",1-w,1-v)&&Sample("Top",u,w)&&Sample("Bottom",u,1-w);
+            var world=new Vector3D(2*u-1,2*v-1,2*w-1);
+            bool fb=Sample("Front",u,1-v)&&Sample("Back",1-u,1-v),lr=Sample("Left",w,1-v)&&Sample("Right",1-w,1-v),tb=Sample("Top",u,w)&&Sample("Bottom",u,1-w);
+            cells[x,y,z]=RegionalPreviewProfile(world,2,fb,regional,signedFields,PairDistance("Front",u,1-v,"Back",1-u,1-v)) && RegionalPreviewProfile(world,0,lr,regional,signedFields,PairDistance("Left",w,1-v,"Right",1-w,1-v)) && RegionalPreviewProfile(world,1,tb,regional,signedFields,PairDistance("Top",u,w,"Bottom",u,1-w));
             if(cells[x,y,z]) foreach(var face in extras ?? [])
             {
-                var basis=FaceBasis(face);var point=new Vector3D(2*u-1,2*v-1,2*w-1);
+                if(face.IsSection && face.SectionMode!="Whole")continue;
+                var basis=FaceBasis(face);var point=new Vector3D(2*u-1-face.MoveX,2*v-1-face.MoveY,2*w-1-face.MoveZ);
                 double fu=(Vector3D.DotProduct(point,basis.u)+1)/2,fv=(1-Vector3D.DotProduct(point,basis.v))/2;
                 double depth=Vector3D.DotProduct(point,basis.normal);
                 var field=fields[face.Id];double outside=fu<0 || fu>1 || fv<0 || fv>1 ? 4 :
@@ -232,18 +240,19 @@ public partial class EditorWindow
             if(ShowOverlapVolume.IsChecked==true) {var material=new DiffuseMaterial(new SolidColorBrush(Color.FromRgb(74,180,210)));scene.Children.Add(new GeometryModel3D(hull,material) {BackMaterial=material});}
         }
         PreviewLoadingText.Text="Loading outline planes…";PreviewLoadingBar.Value=75;
+        previewFaceModels.Clear();
         if(ShowOutlinePlanes.IsChecked==true)
         foreach(var view in drawingViews.Keys.ToArray())
         {
             if(request!=previewRequest) return;
             var mesh=new MeshGeometry3D();AddQuad(mesh,FacePlanePoint(view,0,0),FacePlanePoint(view,1,0),FacePlanePoint(view,1,1),FacePlanePoint(view,0,1));
             foreach(var uv in new[]{new Point(0,0),new Point(1,0),new Point(1,1),new Point(0,1)}) mesh.TextureCoordinates.Add(uv);
-            var texture=OutlineTexture(view,quality.texture);var material=new EmissiveMaterial(new ImageBrush(texture) {Opacity=.85});scene.Children.Add(new GeometryModel3D(mesh,material) {BackMaterial=material});
+            var texture=OutlineTexture(view,quality.texture);var material=new EmissiveMaterial(new ImageBrush(texture) {Opacity=.85});var planeModel=new GeometryModel3D(mesh,material) {BackMaterial=material};scene.Children.Add(planeModel);previewFaceModels[planeModel]=(view,false);
             // Thin colored borders identify each projection plane, even when its drawing is blank.
             var color=view is "Front" or "Back" ? Colors.Coral : view is "Left" or "Right" ? Colors.MediumSeaGreen : Colors.CornflowerBlue;
             var border=new MeshGeometry3D();double t=.006;
             foreach(var (u,v,w,h) in new[]{(0d,0d,1d,t),(0d,1-t,1d,1d),(0d,0d,t,1d),(1-t,0d,1d,1d)}) AddQuad(border,FacePlanePoint(view,u,v),FacePlanePoint(view,w,v),FacePlanePoint(view,w,h),FacePlanePoint(view,u,h));
-            var edge=new EmissiveMaterial(new SolidColorBrush(color));scene.Children.Add(new GeometryModel3D(border,edge) {BackMaterial=edge});
+            var edge=new EmissiveMaterial(new SolidColorBrush(color));var borderModel=new GeometryModel3D(border,edge) {BackMaterial=edge};scene.Children.Add(borderModel);previewFaceModels[borderModel]=(view,true);
             await Dispatcher.Yield(DispatcherPriority.Background);
         }
         if(request!=previewRequest) return;
@@ -260,13 +269,14 @@ public partial class EditorWindow
         var position=new Point3D(previewDistance*Math.Cos(pitch)*Math.Sin(yaw),previewDistance*Math.Sin(pitch),previewDistance*Math.Cos(pitch)*Math.Cos(yaw));
         OutlineViewport.Camera=new PerspectiveCamera(position,new Vector3D(-position.X,-position.Y,-position.Z),new Vector3D(0,1,0),45);
     }
-    private void PreviewOrbitDown(object sender,MouseButtonEventArgs e) {previewDrag=e.GetPosition(OutlineViewport);OutlineViewport.CaptureMouse();}
+    private void PreviewOrbitDown(object sender,MouseButtonEventArgs e) {if(BeginPreviewFaceDrag(e)) return;previewDrag=e.GetPosition(OutlineViewport);OutlineViewport.CaptureMouse();}
     private void PreviewOrbitMove(object sender,MouseEventArgs e)
     {
+        if(MovePreviewFaceDrag(e)) return;
         if(previewDrag==null || e.LeftButton!=MouseButtonState.Pressed) return;var point=e.GetPosition(OutlineViewport);var delta=point-previewDrag.Value;previewDrag=point;
         previewYaw+=delta.X*.5;previewPitch=Math.Clamp(previewPitch-delta.Y*.5,-80,80);UpdatePreviewCamera();
     }
-    private void PreviewOrbitUp(object sender,MouseButtonEventArgs e) {previewDrag=null;OutlineViewport.ReleaseMouseCapture();}
+    private void PreviewOrbitUp(object sender,MouseButtonEventArgs e) {EndPreviewFaceDrag();previewDrag=null;OutlineViewport.ReleaseMouseCapture();}
     private void PreviewZoom(object sender,MouseWheelEventArgs e) {previewDistance=Math.Clamp(previewDistance-e.Delta/120d*.4,2.5,12);UpdatePreviewCamera();e.Handled=true;}
     private void ResetPreviewCamera(object sender,RoutedEventArgs e) {previewYaw=35;previewPitch=22;previewDistance=5.5;UpdatePreviewCamera();}
     private void RefreshOutlinePreview(object sender,RoutedEventArgs e) => RenderOutlinePreview();

@@ -7,7 +7,7 @@ import re
 NAMES=('front','back','left','right','top','bottom')
 AXES={'front':(0,1),'back':(0,1),'left':(2,1),'right':(2,1),'top':(0,2),'bottom':(0,2)}
 
-def reference_volume(masks,resolution):
+def reference_volume(masks,resolution,vertical_center=None):
     boxes={}; spans=np.zeros(3)
     for name in NAMES:
         yy,xx=np.nonzero(masks[name])
@@ -22,7 +22,8 @@ def reference_volume(masks,resolution):
         if name in ('back','right'):u=-u
         if name in ('front','back','left','right','bottom'):v=-v
         columns=np.rint((box[0]+box[2])/2+u).astype(int)
-        rows=np.rint((box[1]+box[3])/2+v).astype(int)
+        row_center=vertical_center if vertical_center is not None and b==1 else (box[1]+box[3])/2
+        rows=np.rint(row_center+v).astype(int)
         valid=(rows[:,None]>=0)&(rows[:,None]<mask.shape[0])&(columns[None,:]>=0)&(columns[None,:]<mask.shape[1])
         target=mask[np.clip(rows,0,mask.shape[0]-1)[:,None],np.clip(columns,0,mask.shape[1]-1)[None,:]]&valid
         # Targets are indexed in increasing world axes; orientation was applied during sampling.
@@ -44,11 +45,7 @@ def score_volume(volume,targets):
         result[name]=float((projection&target).sum()/union) if union else 1.
     return result
 
-def face_basis(face):
-    yaw,pitch=np.deg2rad([face['Yaw'],face['Pitch']])
-    return (np.array([np.cos(yaw),0,-np.sin(yaw)]),
-        np.array([-np.sin(yaw)*np.sin(pitch),np.cos(pitch),-np.cos(yaw)*np.sin(pitch)]),
-        np.array([np.sin(yaw)*np.cos(pitch),np.sin(pitch),np.cos(yaw)*np.cos(pitch)]))
+from face_math import face_basis
 
 def validate_faces(faces):
     if len(faces)>8:raise ValueError('At most eight extra faces are supported.')
@@ -57,12 +54,13 @@ def validate_faces(faces):
         identifier=face.get('Id','')
         if not re.fullmatch(r'custom_[a-f0-9]{32}',identifier) or identifier in ids:raise ValueError('Invalid extra face identifier.')
         ids.add(identifier)
-        for key,limit in [('Yaw',180),('Pitch',90),('Offset',.95)]:
+        for key,limit in [('Yaw',180),('Pitch',90),('Offset',.95),('MoveX',2),('MoveY',2),('MoveZ',2),('Roll',180)]:
             value=face.get(key,0)
             if not isinstance(value,(int,float)) or not np.isfinite(value) or abs(value)>limit:raise ValueError('Invalid extra face '+key)
         if not isinstance(face.get('IsSection',False),bool):raise ValueError('Invalid extra face type.')
+        if face.get('SectionMode','Whole') not in ('Whole','Sections','Blend') or not isinstance(face.get('ReverseSection',False),bool):raise ValueError('Invalid section behavior.')
 
-def constrain_extra_faces(volume,faces,masks,extent=None,pixel_scale=None):
+def constrain_extra_faces(volume,faces,masks,extent=None,pixel_scale=None,vertical_center=None):
     """Orthographic silhouettes cut the hull; slices blend into adjacent volume.
 
     Extra canvases share the original drawing pixel scale, centered at the origin.
@@ -73,19 +71,23 @@ def constrain_extra_faces(volume,faces,masks,extent=None,pixel_scale=None):
     extent=np.ones(3) if extent is None else np.asarray(extent)
     x,y,z=q[:,None,None]*extent[0],q[None,:,None]*extent[1],q[None,None,:]*extent[2]
     for face in faces:
+        if face.get('IsSection',False) and face.get('SectionMode','Whole')!='Whole':continue
         mask=masks[face['Id']]
         if not mask.any():raise ValueError('Empty extra face: '+face.get('Name',face['Id']))
         u,v,normal=face_basis(face)
-        horizontal=x*u[0]+y*u[1]+z*u[2];vertical=x*v[0]+y*v[1]+z*v[2]
+        shift=np.array([face.get(k,0) for k in ('MoveX','MoveY','MoveZ')])*extent
+        horizontal=x*u[0]+y*u[1]+z*u[2]-shift@u;vertical=x*v[0]+y*v[1]+z*v[2]-shift@v
         scale=pixel_scale or max(mask.shape)
-        rows=(mask.shape[0]-1)/2-vertical*scale/2;columns=(mask.shape[1]-1)/2+horizontal*scale/2
+        from face_math import section_image_center
+        center=section_image_center(face,mask.shape,vertical_center)
+        rows=center[1]-vertical*scale/2;columns=center[0]+horizontal*scale/2
         outside=distance_transform_edt(~mask)*2/scale
         # Negative distance also keeps thin contours through interpolation.
         field=outside-distance_transform_edt(mask)*2/scale
         sampled=map_coordinates(field,[rows.ravel(),columns.ravel()],order=1,mode='constant',cval=4).reshape(volume.shape)
         allowance=0
         if face.get('IsSection',False):
-            depth=x*normal[0]+y*normal[1]+z*normal[2]
+            depth=x*normal[0]+y*normal[1]+z*normal[2]-shift@normal
             radius=np.dot(np.abs(normal),extent)
             distance=np.abs(depth-face.get('Offset',0)*radius)
             # A gradual loft around the slice, rather than a one-voxel slab/notch.
@@ -93,17 +95,22 @@ def constrain_extra_faces(volume,faces,masks,extent=None,pixel_scale=None):
         volume &= sampled<=allowance
     return volume
 
-def score_extra_faces(volume,faces,masks,extent,pixel_scale):
+def score_extra_faces(volume,faces,masks,extent,pixel_scale,vertical_center=None):
     """Compare both angled projections and interior sections before retaining AI detail."""
     points=(np.argwhere(volume)+.5)/volume.shape[0]*2-1;points*=extent
     size=volume.shape[0];result={}
     for face in faces:
-        u,v,normal=face_basis(face);selected=points
+        u,v,normal=face_basis(face)
+        shifted=points-np.array([face.get(k,0) for k in ('MoveX','MoveY','MoveZ')])*extent
+        selected=shifted
         if face.get('IsSection',False):
             radius=np.dot(np.abs(normal),extent)
-            selected=points[np.abs(points@normal-face.get('Offset',0)*radius)<=2/size]
-        mask=masks[face['Id']];rows=(mask.shape[0]-1)/2-(selected@v)*pixel_scale/2
-        columns=(mask.shape[1]-1)/2+(selected@u)*pixel_scale/2
+            selected=shifted[np.abs(shifted@normal-face.get('Offset',0)*radius)<=2/size]
+        mask=masks[face['Id']]
+        from face_math import section_image_center
+        center=section_image_center(face,mask.shape,vertical_center)
+        rows=center[1]-(selected@v)*pixel_scale/2
+        columns=center[0]+(selected@u)*pixel_scale/2
         rows=np.rint(rows/(mask.shape[0]-1)*(size-1)).astype(int);columns=np.rint(columns/(mask.shape[1]-1)*(size-1)).astype(int)
         valid=(rows>=0)&(rows<size)&(columns>=0)&(columns<size)
         projection=np.zeros((size,size),bool);projection[rows[valid],columns[valid]]=True
@@ -153,12 +160,26 @@ def reconstruct_surface(volume,resolution,guidance=None,extent=None):
     return mesh
 
 def drawing_fit(ai_mesh,masks,resolution=192,extra_faces=None,extra_masks=None,edge_guides=None):
-    volume,extent,targets=reference_volume(masks,resolution)
+    from section_regions import active_sections,section_volume
+    from face_math import section_vertical_center,section_image_center
+    from round_profiles import refine_round_profiles,refine_round_surface
+    original_masks=masks
+    masks,circles=refine_round_profiles(masks)
+    # Explicit straight/corner annotations take priority over inferred circles.
+    marked={(name.lower() if name.lower() in AXES else name) for name,marks in (edge_guides or {}).items() if marks}
+    circles={name:profiles for name,profiles in circles.items() if name not in marked}
+    for name in marked:
+        if name in original_masks:masks[name]=original_masks[name]
+    vertical_center=section_vertical_center(masks) if active_sections(extra_faces) else None
+    volume,extent,targets=reference_volume(masks,resolution,vertical_center)
     pixel_scale=max(max(np.ptp(np.nonzero(mask)[0])+1,np.ptp(np.nonzero(mask)[1])+1) for mask in masks.values())
-    if extra_faces:volume=constrain_extra_faces(volume,extra_faces,extra_masks or {},extent,pixel_scale)
+    if active_sections(extra_faces):
+        validate_faces(extra_faces)
+        volume=section_volume(targets,extra_faces,extra_masks or {},extent,pixel_scale,resolution,vertical_center)
+    if extra_faces:volume=constrain_extra_faces(volume,extra_faces,extra_masks or {},extent,pixel_scale,vertical_center)
     if volume.sum()<32:raise ValueError('The drawings have no usable shared volume. Check opposite views and proportions.')
     drawing_scores=score_volume(volume,targets)
-    if extra_faces:drawing_scores.update(score_extra_faces(volume,extra_faces,extra_masks,extent,pixel_scale))
+    if extra_faces:drawing_scores.update(score_extra_faces(volume,extra_faces,extra_masks,extent,pixel_scale,vertical_center))
     # An AI shape cannot add volume that changes the silhouettes. Only retain it if its projections fit equally well.
     candidates=[(volume,'drawing-guided visual hull',drawing_scores)]
     if ai_mesh is not None and len(ai_mesh.faces)>0:
@@ -169,16 +190,20 @@ def drawing_fit(ai_mesh,masks,resolution=192,extra_faces=None,extra_masks=None,e
             valid=((indices>=0)&(indices<resolution)).all(axis=1);ai=np.zeros_like(volume)
             ai[tuple(indices[valid].T)]=True;ai &= volume
             scores=score_volume(ai,targets)
-            if extra_faces:scores.update(score_extra_faces(ai,extra_faces,extra_masks,extent,pixel_scale))
+            if extra_faces:scores.update(score_extra_faces(ai,extra_faces,extra_masks,extent,pixel_scale,vertical_center))
             if ai.sum()>=32 and all(scores[name]>=drawing_scores[name]-1e-6 for name in drawing_scores):
                 candidates.append((ai,'AI refined with six-view drawing constraints',scores))
     selected,method,scores=candidates[-1]
     from edge_guidance import prepare_guidance,pin_corners
-    guidance,guide_report=prepare_guidance(edge_guides,dict(masks,**(extra_masks or {})),extent,extra_faces)
+    guidance,guide_report=prepare_guidance(edge_guides,dict(masks,**(extra_masks or {})),extent,extra_faces,vertical_center)
     mesh=reconstruct_surface(selected,resolution,guidance,extent)
     mesh.apply_scale(extent);mesh.remove_unreferenced_vertices()
     if guidance:
         mesh=pin_corners(mesh,guidance,extent,resolution)
+    if circles:
+        mesh,round_vertices=refine_round_surface(mesh,circles,masks,extent,extra_faces,vertical_center,pixel_scale,resolution)
+    else:round_vertices=0
+    mesh.metadata['roundProfiles']={'circles':sum(len(p) for p in circles.values()),'correctedVertices':round_vertices}
     mesh.metadata['edgeGuides']=[c['meta'] for c in guidance]
     mesh.metadata['edgeGuidance']=guide_report
     pixel_scale=max(max(np.ptp(np.nonzero(mask)[0])+1,np.ptp(np.nonzero(mask)[1])+1) for mask in masks.values())
@@ -190,11 +215,13 @@ def drawing_fit(ai_mesh,masks,resolution=192,extra_faces=None,extra_masks=None,e
         if name in ('back','right'):u=-u
         if name in ('front','back','left','right','bottom'):v=-v
         columns=(xx.min()+xx.max())/2+u*extent[a]*pixel_scale
-        rows=(yy.min()+yy.max())/2+v*extent[b]*pixel_scale
+        row_center=vertical_center if vertical_center is not None and b==1 else (yy.min()+yy.max())/2
+        rows=row_center+v*extent[b]*pixel_scale
         paint_bounds[name]=[float(columns.min()),float(rows.min()),float(columns.max()),float(rows.max())]
     if extra_faces:
         paint_bounds['_extra']={'extent':extent.tolist(),'pixelScale':int(pixel_scale),'low':mesh.bounds[0].tolist(),'high':mesh.bounds[1].tolist()}
+        paint_bounds['_extra']['imageCenters']={f['Id']:section_image_center(f,extra_masks[f['Id']].shape,vertical_center).tolist() for f in extra_faces}
     mesh.metadata['paintBounds']=paint_bounds
     mesh.metadata['generationMethod']=method
-    mesh.metadata['drawingFit']={'resolution':resolution,'silhouetteIoU':scores,'meanIoU':float(np.mean(list(scores.values()))),'centering':'each outline centered; shared axis scale preserves relative view proportions','extraFaceCount':len(extra_faces or []),'smoothing':{'method':'signed-distance surface reconstruction and bounded Taubin relaxation','fieldSigmaInVoxels':3,'iterations':30,'maximumRelaxationDisplacementInVoxels':.75},'note':'Score measures constrained voxel projections before distance-field smoothing/export; hidden concavities are not determined by outlines'}
+    mesh.metadata['drawingFit']={'resolution':resolution,'silhouetteIoU':scores,'meanIoU':float(np.mean(list(scores.values()))),'centering':('sectioned profiles share the full-object vertical anchor; shared axis scale preserves proportions' if vertical_center is not None else 'each outline centered; shared axis scale preserves relative view proportions'),'extraFaceCount':len(extra_faces or []),'smoothing':{'method':'signed-distance surface reconstruction and bounded Taubin relaxation','fieldSigmaInVoxels':3,'iterations':30,'maximumRelaxationDisplacementInVoxels':.75},'note':'Score measures constrained voxel projections before distance-field smoothing/export; hidden concavities are not determined by outlines'}
     return mesh
