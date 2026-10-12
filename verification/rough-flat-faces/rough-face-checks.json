@@ -1,0 +1,9 @@
+{
+  "checks": "PASS",
+  "report": {
+    "faces": 1,
+    "flattenedVertices": 100,
+    "removedVertices": 140
+  },
+  "exportedFaceVertices": 4
+}

@@ -31,7 +31,10 @@ public partial class EditorWindow
     {
         int index=extraFaces.FindIndex(f=>f.Id==face.Id);if(index<0)return;
         DrawingDocument.Validate(Document() with {ExtraFaces=extraFaces.Select(f=>f.Id==face.Id?face:f).ToList()});
-        extraFaces[index]=face;LoadPreviewFaceValues();LoadExtraFaceSettings();
+        var previous=extraFaces[index];var guideBackup=edgeGuides.ToDictionary(p=>p.Key,p=>p.Value.ToList());extraFaces[index]=face;
+        foreach(var line in (edgeGuides.GetValueOrDefault(face.Id) ?? []).Where(g=>g.PositionLocked).ToArray())
+        if(!SyncLockedLine(face.Id,line)){extraFaces[index]=previous;edgeGuides.Clear();foreach(var pair in guideBackup)edgeGuides[pair.Key]=pair.Value;Status.Text="Face change blocked by a parallel line lock. Disconnect the lines first.";LoadPreviewFaceValues();return;}
+        LoadPreviewFaceValues();LoadExtraFaceSettings();
         foreach(var pair in previewFaceModels.Where(p=>p.Value.face==face.Id))
         {
             var mesh=new MeshGeometry3D();
@@ -51,7 +54,7 @@ public partial class EditorWindow
     private void ResetPreviewFace(object sender,RoutedEventArgs e) {if(SelectedPreviewFace is {} face)SetPreviewFace(face with {MoveX=0,MoveY=0,MoveZ=0,Yaw=0,Pitch=0,Roll=0,Offset=0},true);}
     private bool BeginPreviewFaceDrag(MouseButtonEventArgs e)
     {
-        if(PreviewFaceMode.SelectedIndex==0)return false;
+        if(PreviewFaceMode.SelectedIndex is not (1 or 2))return false;
         // Clicking a custom plane selects it; the dropdown works even if hidden.
         VisualTreeHelper.HitTest(OutlineViewport,null,result=>{if(result is RayMeshGeometry3DHitTestResult hit && hit.ModelHit is GeometryModel3D model && previewFaceModels.TryGetValue(model,out var entry) && extraFaces.Any(f=>f.Id==entry.face)){PreviewFace.SelectedValue=entry.face;return HitTestResultBehavior.Stop;}return HitTestResultBehavior.Continue;},new PointHitTestParameters(e.GetPosition(OutlineViewport)));
         if(SelectedPreviewFace is not {} face)return true;

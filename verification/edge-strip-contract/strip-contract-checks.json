@@ -1,0 +1,18 @@
+{
+  "checks": "PASS",
+  "originalEdgeVertices": 34,
+  "remainingEdgeVertices": 4,
+  "removedVertices": 993,
+  "coverage": [
+    {
+      "id": "noisy-edge",
+      "removedVertices": 993,
+      "quarters": [
+        243,
+        272,
+        239,
+        239
+      ]
+    }
+  ]
+}

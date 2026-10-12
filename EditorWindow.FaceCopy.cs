@@ -60,7 +60,7 @@ public partial class EditorWindow
             document.Layers[target]=replace ? copied : copied.Concat(document.Layers[target]).ToList();
             if(copyMarks)
             {
-                var guides=(document.EdgeGuides!.GetValueOrDefault(source) ?? []).Select(g=>g with {Id=Guid.NewGuid().ToString("N"),X1=mirror ? canvasWidth-g.X1 : g.X1,X2=mirror ? canvasWidth-g.X2 : g.X2}).ToList();
+                var guides=(document.EdgeGuides!.GetValueOrDefault(source) ?? []).Select(g=>g with {Id=Guid.NewGuid().ToString("N"),X1=mirror ? canvasWidth-g.X1 : g.X1,X2=mirror ? canvasWidth-g.X2 : g.X2,LinkGroup=null,LockGroup=null,PositionLocked=false,CornerGroup=null}).ToList();
                 document.EdgeGuides![target]=replace ? guides : guides.Concat(document.EdgeGuides!.GetValueOrDefault(target) ?? []).ToList();
             }
             if(copySelection)

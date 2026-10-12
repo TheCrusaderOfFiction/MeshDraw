@@ -31,6 +31,6 @@ for mode in ('static','skeletal'):
         assert files[face['Id']+'.png']==(folder/(face['Id']+'.png')).read_bytes()
         assert face['Id']+'_basecolor.png' in files
     result=json.loads((folder/'result.json').read_text());assert len(result['constraintViews'])==8
-    assert result['drawingFit']['smoothing']['iterations']==30
+    assert result['drawingFit']['smoothing']['iterations']==480
     print('Verified '+mode+' mesh, smooth export, five maps, two extra faces, and complete asset bundle.',flush=True)
 print('PASS: extra face Blender static/skeletal export and checked bundle preservation.')

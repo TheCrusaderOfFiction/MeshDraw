@@ -160,7 +160,7 @@ public partial class EditorWindow
     }
     private void CancelGuidedStroke()
     {
-        drawingEdgeGuide=false;
+        drawingEdgeGuide=false;movingEdgeGuide=null;
         selectionBrushStroke=false;selectionBrushErase=false;
         CancelSelectionGesture();
         CancelLayerMove();

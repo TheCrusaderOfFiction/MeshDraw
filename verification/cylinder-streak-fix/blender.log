@@ -1,0 +1,24 @@
+Warning: No mesh data to join
+Flat surface cleanup: 106,644 redundant vertices removed
+Refining marked edge strips...
+Refining marked corners...
+Corner ridges: 4 refined; 4 redundant vertices removed
+Removing straight ridge subdivisions...
+Marked edge cleanup: {'marks': 52, 'removedVertices': 8558, 'sharpEdges': 1603, 'weldedCornerVertices': 234, 'straightVerticesRemoved': 101, 'flattenedEdgeVertices': 7352, 'singlePointTips': 1, 'projectedCornerRidges': 4, 'ridgeGuideCoverage': [{'id': '861c12aaf348420c8f4e320fd047afd7', 'removedVertices': 64, 'quarters': [14, 12, 11, 27]}, {'id': '65fb44b77861471ab56363a04b980a91', 'removedVertices': 16, 'quarters': [0, 0, 3, 13]}, {'id': '672e5c48d0e049ebbc9bc3c228de6974', 'removedVertices': 12, 'quarters': [0, 0, 3, 9]}, {'id': '65e2da4fcebe495baabc79b62269de20', 'removedVertices': 4, 'quarters': [1, 0, 0, 3]}, {'id': '926dc60048e344b2ab0d8f8d8197c519', 'removedVertices': 3, 'quarters': [0, 0, 1, 2]}, {'id': 'f3c95b0ebd414d778bc2e57c193430fb', 'removedVertices': 2, 'quarters': [1, 0, 0, 1]}]}
+Analytic circular shading: 2,028 face corners
+Cleaning final exported straight-edge strips...
+Final exported edge-strip cleanup: {'removedVertices': 0, 'coverage': []}
+Baked painted material channels: basecolor
+Vertex limit: 9,020 / 10,000 (including texture seams)
+
+FBX export starting... 'C:\\GameProjects\\MeshDraw\\verification\\cylinder-streak-fix\\mesh.fbx'
+export finished in 0.0817 sec.
+Info: Saved as "mesh.blend"
+FBX export complete: C:\GameProjects\MeshDraw\verification\cylinder-streak-fix\mesh.fbx
+FBX version: 7400
+Sword topology: 4553 vertices; 1 vertices at the highest point
+PASS: real sword FBX has one tip vertex, marked edge flattening, and a valid vertex budget.
+Blender 5.1.1 (hash b70da489d7f4 built 2026-04-14 01:37:22)
+OBJ import of 'shape.obj' took 106.89 ms
+
+Blender quit

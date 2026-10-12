@@ -1,0 +1,7 @@
+Marked edge cleanup: {'marks': 2, 'removedVertices': 480, 'sharpEdges': 4, 'weldedCornerVertices': 0, 'straightVerticesRemoved': 16, 'flattenedEdgeVertices': 36, 'singlePointTips': 0, 'ridgeGuideCoverage': [{'id': None, 'removedVertices': 16, 'quarters': [4, 4, 4, 4]}]}
+Marked edge cleanup: {'marks': 1, 'removedVertices': 2, 'sharpEdges': 1, 'weldedCornerVertices': 2, 'straightVerticesRemoved': 0, 'flattenedEdgeVertices': 0, 'singlePointTips': 0, 'ridgeGuideCoverage': []}
+Marked edge cleanup: {'marks': 1, 'removedVertices': 0, 'sharpEdges': 0, 'weldedCornerVertices': 0, 'straightVerticesRemoved': 0, 'flattenedEdgeVertices': 0, 'singlePointTips': 0, 'ridgeGuideCoverage': []}
+PASS: pointed caps use one welded geometric vertex; straight ridge has endpoint vertices only; rounded cap and closed topology preserved.
+Blender 5.1.1 (hash b70da489d7f4 built 2026-04-14 01:37:22)
+
+Blender quit

@@ -119,17 +119,27 @@ def score_extra_faces(volume,faces,masks,extent,pixel_scale,vertical_center=None
         union=(projection|target).sum();result[face['Id']]=float((projection&target).sum()/union) if union else 1.
     return result
 
+SURFACE_SMOOTHING_ITERATIONS=480
+
 def smooth_surface(mesh,resolution):
-    """Non-shrinking relaxation, bounded to less than one grid cell per vertex."""
+    """High-quality non-shrinking relaxation with a sub-voxel movement budget.
+
+    Extra alternating passes remove small normal ripples without increasing the
+    displacement limit, so additional quality does not erase thin drawing detail.
+    """
     original=mesh.vertices.copy();bounds=mesh.bounds.copy()
-    trimesh.smoothing.filter_taubin(mesh,lamb=.5,nu=.5,iterations=30)
+    # Preserve actual creases while allowing broad curved surfaces to relax.
+    creases=mesh.face_adjacency_edges[mesh.face_adjacency_angles>np.deg2rad(35)]
+    pinned=np.unique(creases) if len(creases) else np.empty(0,dtype=int)
+    operator=trimesh.smoothing.laplacian_calculation(mesh,pinned_vertices=pinned)
+    trimesh.smoothing.filter_taubin(mesh,lamb=.5,nu=.5,iterations=SURFACE_SMOOTHING_ITERATIONS,laplacian_operator=operator)
     delta=mesh.vertices-original;length=np.linalg.norm(delta,axis=1)
     limit=.75/resolution
     mesh.vertices=original+delta*np.minimum(1,limit/np.maximum(length,1e-12))[:,None]
     mesh.vertices=np.clip(mesh.vertices,bounds[0],bounds[1])
     return mesh
 
-def reconstruct_surface(volume,resolution,guidance=None,extent=None):
+def reconstruct_surface(volume,resolution,guidance=None,extent=None,cylinders=None):
     """Extract a rounded sub-voxel surface, rather than marching a binary grid.
 
     Padding closes faces on the drawing bounds. A smoothed signed distance field
@@ -151,17 +161,41 @@ def reconstruct_surface(volume,resolution,guidance=None,extent=None):
     if guidance:
         from edge_guidance import guide_distance_field
         guide_distance_field(field,raw,guidance,extent,resolution)
+    if cylinders:
+        from round_profiles import reconstruct_cylinders
+        reconstruct_cylinders(field,cylinders,extent,resolution,volume)
     vertices,faces,_,_=marching_cubes(field,level=0,spacing=(1/resolution,)*3,allow_degenerate=False)
     vertices+=(.5-4)/resolution
     mesh=trimesh.Trimesh(vertices=vertices,faces=faces,process=True)
     # The field's gradient points inward; explicitly keep outward winding.
     if mesh.volume<0:mesh.invert()
     smooth_surface(mesh,resolution)
+    return retain_volume_components(mesh,volume,resolution)
+
+
+def retain_volume_components(mesh,volume,resolution,extent=None):
+    """Keep one principal surface per original drawing component."""
+    extent=np.ones(3) if extent is None else np.asarray(extent)
+    parts=mesh.split(only_watertight=False)
+    if len(parts)>1:
+        labels,_=label(volume);owners={}
+        for part in parts:
+            sample=np.clip(np.rint(part.vertices/extent*resolution-.5).astype(int),0,resolution-1)
+            ids=labels[tuple(sample.T)];ids=ids[ids>0]
+            if not len(ids):continue
+            owner=int(np.bincount(ids).argmax())
+            if owner not in owners or len(part.faces)>len(owners[owner].faces):owners[owner]=part
+        if owners:mesh=trimesh.util.concatenate(list(owners.values()))
     return mesh
 
 def drawing_fit(ai_mesh,masks,resolution=192,extra_faces=None,extra_masks=None,edge_guides=None):
     from section_regions import active_sections,section_volume
     from face_math import section_vertical_center,section_image_center
+    from outline_guidance import straighten_outlines
+    combined=dict(masks,**(extra_masks or {}))
+    corrected,edge_guides,outline_report=straighten_outlines(combined,edge_guides)
+    masks={name:corrected[name] for name in masks}
+    extra_masks={name:corrected[name] for name in (extra_masks or {})}
     from round_profiles import refine_round_profiles,refine_round_surface
     original_masks=masks
     masks,circles=refine_round_profiles(masks)
@@ -172,11 +206,15 @@ def drawing_fit(ai_mesh,masks,resolution=192,extra_faces=None,extra_masks=None,e
         if name in original_masks:masks[name]=original_masks[name]
     vertical_center=section_vertical_center(masks) if active_sections(extra_faces) else None
     volume,extent,targets=reference_volume(masks,resolution,vertical_center)
+    from face_math import register_section_profiles
+    extra_faces,registration=register_section_profiles(extra_faces,extra_masks,extent)
     pixel_scale=max(max(np.ptp(np.nonzero(mask)[0])+1,np.ptp(np.nonzero(mask)[1])+1) for mask in masks.values())
     if active_sections(extra_faces):
         validate_faces(extra_faces)
         volume=section_volume(targets,extra_faces,extra_masks or {},extent,pixel_scale,resolution,vertical_center)
     if extra_faces:volume=constrain_extra_faces(volume,extra_faces,extra_masks or {},extent,pixel_scale,vertical_center)
+    from round_profiles import preserve_round_sections
+    volume,round_sections,cylinders=preserve_round_sections(volume,circles,masks,extent,extra_faces,vertical_center,pixel_scale,return_cylinders=True)
     if volume.sum()<32:raise ValueError('The drawings have no usable shared volume. Check opposite views and proportions.')
     drawing_scores=score_volume(volume,targets)
     if extra_faces:drawing_scores.update(score_extra_faces(volume,extra_faces,extra_masks,extent,pixel_scale,vertical_center))
@@ -196,16 +234,26 @@ def drawing_fit(ai_mesh,masks,resolution=192,extra_faces=None,extra_masks=None,e
     selected,method,scores=candidates[-1]
     from edge_guidance import prepare_guidance,pin_corners
     guidance,guide_report=prepare_guidance(edge_guides,dict(masks,**(extra_masks or {})),extent,extra_faces,vertical_center)
-    mesh=reconstruct_surface(selected,resolution,guidance,extent)
+    mesh=reconstruct_surface(selected,resolution,guidance,extent,cylinders)
     mesh.apply_scale(extent);mesh.remove_unreferenced_vertices()
     if guidance:
+        from outline_guidance import straighten_surface
+        mesh=straighten_surface(mesh,guidance,resolution)
         mesh=pin_corners(mesh,guidance,extent,resolution)
+    # Preserve marked corner detail through the outline field rather than
+    # collapsing nearby 3D vertices toward a potentially inset marker.
     if circles:
         mesh,round_vertices=refine_round_surface(mesh,circles,masks,extent,extra_faces,vertical_center,pixel_scale,resolution)
     else:round_vertices=0
-    mesh.metadata['roundProfiles']={'circles':sum(len(p) for p in circles.values()),'correctedVertices':round_vertices}
+    from planar_surfaces import flatten_supported_planes
+    mesh,planar_report=flatten_supported_planes(mesh,guidance,resolution,cylinders)
+    metadata=dict(mesh.metadata)
+    mesh=retain_volume_components(mesh,selected,resolution,extent)
+    mesh.metadata.update(metadata)
+    mesh.metadata['planarSurfaces']=planar_report
+    mesh.metadata['roundProfiles']={'circles':sum(len(p) for p in circles.values()),'correctedVertices':round_vertices,'preservedSections':round_sections,'analyticCylinders':len(cylinders)}
     mesh.metadata['edgeGuides']=[c['meta'] for c in guidance]
-    mesh.metadata['edgeGuidance']=guide_report
+    mesh.metadata['edgeGuidance']=dict(guide_report,outlineCorrection=outline_report)
     pixel_scale=max(max(np.ptp(np.nonzero(mask)[0])+1,np.ptp(np.nonzero(mask)[1])+1) for mask in masks.values())
     paint_bounds={}
     unit_bounds=mesh.bounds/extent
@@ -220,8 +268,10 @@ def drawing_fit(ai_mesh,masks,resolution=192,extra_faces=None,extra_masks=None,e
         paint_bounds[name]=[float(columns.min()),float(rows.min()),float(columns.max()),float(rows.max())]
     if extra_faces:
         paint_bounds['_extra']={'extent':extent.tolist(),'pixelScale':int(pixel_scale),'low':mesh.bounds[0].tolist(),'high':mesh.bounds[1].tolist()}
+        paint_bounds['_extra']['profileMirrors']={f['Id']:f.get('_MirrorProfile',False) for f in extra_faces}
         paint_bounds['_extra']['imageCenters']={f['Id']:section_image_center(f,extra_masks[f['Id']].shape,vertical_center).tolist() for f in extra_faces}
     mesh.metadata['paintBounds']=paint_bounds
     mesh.metadata['generationMethod']=method
-    mesh.metadata['drawingFit']={'resolution':resolution,'silhouetteIoU':scores,'meanIoU':float(np.mean(list(scores.values()))),'centering':('sectioned profiles share the full-object vertical anchor; shared axis scale preserves proportions' if vertical_center is not None else 'each outline centered; shared axis scale preserves relative view proportions'),'extraFaceCount':len(extra_faces or []),'smoothing':{'method':'signed-distance surface reconstruction and bounded Taubin relaxation','fieldSigmaInVoxels':3,'iterations':30,'maximumRelaxationDisplacementInVoxels':.75},'note':'Score measures constrained voxel projections before distance-field smoothing/export; hidden concavities are not determined by outlines'}
+    mesh.metadata['profileRegistration']=registration
+    mesh.metadata['drawingFit']={'resolution':resolution,'silhouetteIoU':scores,'meanIoU':float(np.mean(list(scores.values()))),'centering':('sectioned profiles share the full-object vertical anchor; shared axis scale preserves proportions' if vertical_center is not None else 'each outline centered; shared axis scale preserves relative view proportions'),'extraFaceCount':len(extra_faces or []),'smoothing':{'method':'signed-distance reconstruction and crease-preserving Taubin relaxation','creaseAngleDegrees':35,'fieldSigmaInVoxels':3,'iterations':SURFACE_SMOOTHING_ITERATIONS,'maximumRelaxationDisplacementInVoxels':.75},'note':'Score measures constrained voxel projections before distance-field smoothing/export; hidden concavities are not determined by outlines'}
     return mesh

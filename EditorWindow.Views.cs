@@ -22,6 +22,7 @@ public partial class EditorWindow
     private void SetViewLayout(string layout)
     {
         if(drawingViews.Count<6) return;
+        StopCanvasNavigation();
         foreach(var host in multiViewHosts.Values) host.Child=null;
         AllViews.Children.Clear();multiViewHosts.Clear();multiViewFrames.Clear();
         foreach(TabItem tab in Views.Items)
@@ -29,7 +30,7 @@ public partial class EditorWindow
             var name=(string)tab.Tag;var single=(Viewbox)tab.Content;single.Child=null;
             if(layout=="all")
             {
-                var host=new Viewbox {Child=surfaces[name],Stretch=Stretch.Uniform};multiViewHosts[name]=host;
+                var host=new Viewbox {Child=surfaces[name],Stretch=Stretch.Uniform,ClipToBounds=true};multiViewHosts[name]=host;
                 var panel=new DockPanel();var title=new Button {Content=FaceName(name),Tag=name,Margin=new Thickness(0),Padding=new Thickness(6),HorizontalContentAlignment=HorizontalAlignment.Left};
                 title.Click+=(_,_)=>SelectMultiView(name);DockPanel.SetDock(title,Dock.Top);panel.Children.Add(title);panel.Children.Add(host);
                 var frame=new Border {Child=panel,BorderThickness=new Thickness(2),Margin=new Thickness(3),Background=new SolidColorBrush(Color.FromRgb(36,45,58))};
@@ -38,7 +39,7 @@ public partial class EditorWindow
             else single.Child=surfaces[name];
         }
         AllViews.Rows=(drawingViews.Count+2)/3;
-        LoadPreviewFaces();viewLayout=layout;Views.Visibility=layout=="single" ? Visibility.Visible : Visibility.Collapsed;
+        LoadPreviewFaces();viewLayout=layout;Update3DPanelLayout();Views.Visibility=layout=="single" ? Visibility.Visible : Visibility.Collapsed;
         AllViews.Visibility=layout=="all" ? Visibility.Visible : Visibility.Collapsed;
         OutlinePreviewScreen.Visibility=layout=="3d" ? Visibility.Visible : Visibility.Collapsed;
         UpdateMultiViewSelection();if(layout=="3d") RenderOutlinePreview();
@@ -256,6 +257,7 @@ public partial class EditorWindow
             await Dispatcher.Yield(DispatcherPriority.Background);
         }
         if(request!=previewRequest) return;
+        RenderPreviewEdgeLinks(scene);
         OutlineViewport.Children.Clear();OutlineViewport.Children.Add(new ModelVisual3D {Content=scene});UpdatePreviewCamera();PreviewLoadingBar.Value=100;
         await Dispatcher.Yield(DispatcherPriority.Render);
         OutlinePreviewStatus.Text=quality.label+" quality · "+quality.cells+"³ volume samples · "+(incomplete.Count>0 ? "Close the outline in: "+string.Join(", ",incomplete)+". Planes show the current drawings." : previewOccupiedCells==0 ? "The drawing silhouettes have no shared overlap. Check alignment and proportions." : "Approximate shared volume from the drawing silhouettes. Coral: front/back · Green: left/right · Blue: top/bottom.");
@@ -269,7 +271,7 @@ public partial class EditorWindow
         var position=new Point3D(previewDistance*Math.Cos(pitch)*Math.Sin(yaw),previewDistance*Math.Sin(pitch),previewDistance*Math.Cos(pitch)*Math.Cos(yaw));
         OutlineViewport.Camera=new PerspectiveCamera(position,new Vector3D(-position.X,-position.Y,-position.Z),new Vector3D(0,1,0),45);
     }
-    private void PreviewOrbitDown(object sender,MouseButtonEventArgs e) {if(BeginPreviewFaceDrag(e)) return;previewDrag=e.GetPosition(OutlineViewport);OutlineViewport.CaptureMouse();}
+    private void PreviewOrbitDown(object sender,MouseButtonEventArgs e) {if(BeginPreviewLineLink(e))return;if(BeginPreviewFaceDrag(e)) return;previewDrag=e.GetPosition(OutlineViewport);OutlineViewport.CaptureMouse();}
     private void PreviewOrbitMove(object sender,MouseEventArgs e)
     {
         if(MovePreviewFaceDrag(e)) return;

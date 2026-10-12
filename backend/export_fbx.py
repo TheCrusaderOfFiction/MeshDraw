@@ -1,5 +1,8 @@
 """Blender background export. Humanoid mode expects an upright T-pose, Y up in the source."""
 from pathlib import Path
+import os
+# These small three-axis products are faster without a BLAS thread fan-out.
+os.environ.setdefault('OPENBLAS_NUM_THREADS','1')
 import sys
 import math
 import json
@@ -9,7 +12,11 @@ sys.path.insert(0,str(Path(__file__).resolve().parent))
 from drawn_rig import load_rig, populate
 from paint_materials import paint_material
 from vertex_budget import read_vertex_limit,enforce_vertex_budget,render_vertex_count
-from edge_optimizer import optimize_marked_edges
+from edge_optimizer import optimize_marked_edges,dissolve_flat_surfaces
+from round_shading import load_round_surfaces,smooth_round_normals,capture_round_normals,restore_round_normals
+from guided_collapse import finalize_guided_strips
+from paint_materials import prepare_uv
+from vertex_budget import preserve_sharp_shading
 
 def create_humanoid(bone):
     bone('root', (0,0,0), (0,0,.15))
@@ -41,7 +48,9 @@ bpy.ops.object.join()
 mesh = bpy.context.object
 mesh.name = 'MeshDrawObject'
 bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
+flat_removed=dissolve_flat_surfaces(mesh)
 edge_optimization=optimize_marked_edges(mesh,Path(source).parent/'edge_guides.json')
+edge_optimization['flatSurfaceRemovedVertices']=flat_removed
 low = Vector(tuple(min((mesh.matrix_world @ v.co)[i] for v in mesh.data.vertices) for i in range(3)))
 high = Vector(tuple(max((mesh.matrix_world @ v.co)[i] for v in mesh.data.vertices) for i in range(3)))
 height = high.z - low.z
@@ -55,7 +64,18 @@ rig = None
 folder=Path(source).parent
 job=json.loads((folder/'job.json').read_text()) if (folder/'job.json').exists() else {}
 vertex_limit=read_vertex_limit(job)
-render_vertices,simplification_passes=enforce_vertex_budget(mesh,vertex_limit)
+round_surfaces=load_round_surfaces(folder/'round_surfaces.json',((low.x+high.x)/2,(low.y+high.y)/2,low.z),height)
+render_vertices,simplification_passes=enforce_vertex_budget(mesh,vertex_limit,round_surfaces)
+saved_round_normals=capture_round_normals(mesh,round_surfaces)
+edge_optimization['finalStripCleanup']=finalize_guided_strips(mesh,folder/'edge_guides.json',((low.x+high.x)/2,(low.y+high.y)/2,low.z),height,round_surfaces)
+edge_optimization['removedVertices']+=edge_optimization['finalStripCleanup']['removedVertices']
+edge_optimization['straightVerticesRemoved']=edge_optimization.get('straightVerticesRemoved',0)+edge_optimization['finalStripCleanup']['removedVertices']
+if edge_optimization['finalStripCleanup']['removedVertices']:
+    preserve_sharp_shading(mesh)
+    prepare_uv(mesh)
+    smooth_round_normals(mesh,round_surfaces)
+    edge_optimization['preservedRoundNormalLoops']=restore_round_normals(mesh,saved_round_normals)
+    render_vertices=render_vertex_count(mesh)
 painted_maps=paint_material(mesh,folder,job.get('textureSize',1024),prepared=True)
 if render_vertex_count(mesh)>vertex_limit:raise RuntimeError('Material baking exceeded the vertex limit.')
 print(f'Vertex limit: {render_vertices:,} / {vertex_limit:,} (including texture seams)',flush=True)
@@ -108,5 +128,5 @@ bpy.ops.export_scene.fbx(filepath=destination, use_selection=True, object_types=
 bpy.ops.wm.save_as_mainfile(filepath=str(Path(source).with_name('mesh.blend')))
 (folder/'export-summary.json').write_text(json.dumps({'textures':painted_maps,'rig':'drawn' if drawn else ('basic humanoid' if rig else None),
     'boneCount':len(rig.data.bones) if rig else 0,'vertexLimit':vertex_limit,'renderVertices':render_vertices,
-    'geometryVertices':len(mesh.data.vertices),'triangles':len(mesh.data.polygons),'simplificationPasses':simplification_passes,'edgeOptimization':edge_optimization},indent=2))
+    'normalization':{'origin':[(low.x+high.x)/2,(low.y+high.y)/2,low.z],'height':height},'geometryVertices':len(mesh.data.vertices),'triangles':len(mesh.data.polygons),'simplificationPasses':simplification_passes,'edgeOptimization':edge_optimization},indent=2))
 print('FBX export complete:', destination)

@@ -76,7 +76,9 @@ def paint_material(mesh, folder, size=1024, prepared=False):
     extra_projections={};extra_normals={}
     for face in extras:
         from face_math import face_basis
-        horizontal,vertical,normal=face_basis(face)
+        registered=dict(face)
+        registered['_MirrorProfile']=(extra_space or {}).get('profileMirrors',{}).get(face['Id'],False)
+        horizontal,vertical,normal=face_basis(registered)
         extent=np.asarray(extra_space['extent']) if extra_space else np.ones(3)
         shifted=source_unit-np.array([face.get(k,0) for k in ('MoveX','MoveY','MoveZ')])*extent
         extra_projections[face['Id']]=np.column_stack((shifted@horizontal,shifted@vertical))

@@ -33,7 +33,7 @@ def package(folder, destination=None):
     files=[]; total=0
     channels=('basecolor','roughness','metallic','emission','height')
     views=('front','back','left','right','top','bottom')
-    known=set(required+['drawing-fit.json','mesh.blend','shape.obj','paint_bounds.json','manifest.json','unreal-material.json','export-summary.json','result.json','edge_guides.json'])
+    known=set(required+['drawing-fit.json','mesh.blend','shape.obj','paint_bounds.json','manifest.json','unreal-material.json','export-summary.json','result.json','edge_guides.json','round_surfaces.json'])
     known.update(f'{view}_{kind}.png' for view in views for kind in channels)
     extras=project.get('ExtraFaces') or []
     if len(extras)>8:raise ValueError('Too many extra faces')

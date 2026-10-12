@@ -1,0 +1,1 @@
+{"Version":1,"Name":"Creature type","Skeleton":{"Joints":[{"Id":"a","X":0.5,"Y":0.1,"Z":0.5},{"Id":"b","X":0.5,"Y":0.5,"Z":0.5},{"Id":"c","X":0.65,"Y":0.85,"Z":0.5}],"Bones":[{"Id":"bone-a","Name":"drawn_spine","Head":"a","Tail":"b","Parent":null},{"Id":"bone-b","Name":"drawn_branch","Head":"b","Tail":"c","Parent":"bone-a"}]}}

@@ -1,0 +1,1 @@
+[{"Id": "wall", "Kind": "Straight", "Point": [0, -1, -0.15], "End": [0, 1, -0.15], "U": [0, 1, 0], "V": [0, 0, -1], "Normal": [0, 0, -1], "Radius": 0.04}, {"Id": "cap", "Kind": "Corner", "Point": [0, 1, 0], "U": [1, 0, 0], "V": [0, 0, -1], "Radius": 0.04, "CornerStyle": "Pointed"}]

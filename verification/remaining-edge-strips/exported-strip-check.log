@@ -1,0 +1,7 @@
+FBX version: 7400
+FBX version: 7400
+Cylinder wall radius deviation, before/after: 0.01299458011130103 0.01299458011130103
+PASS: exported edge strips reduced; closed mesh, one tip, and circular walls preserved {'checks': 'PASS', 'beforeEdgeBandSamples': 3063, 'afterEdgeBandSamples': 1020, 'circleWallMaximumRadiusError': 0.01299458011130103, 'geometryVertices': 2432, 'tipVertices': 1}
+Blender 5.1.1 (hash b70da489d7f4 built 2026-04-14 01:37:22)
+
+Blender quit

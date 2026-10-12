@@ -32,6 +32,7 @@ public partial class EditorWindow : Window
     public EditorWindow()
     {
         InitializeComponent();
+        InitializeCanvasNavigation();
         syncing = true;
         foreach (var name in DrawingDocument.ViewNames)
         {
@@ -51,7 +52,7 @@ public partial class EditorWindow : Window
         layer.Ink.Strokes.StrokesChanged += (_, _) => { if (!syncing) { RecordChange(); Layers.Items.Refresh(); RefreshOppositeShadows(); MarkOutlinePreviewDirty(); } };
         return layer;
     }
-    private EditorDocument Document() => new(2, Output.SelectedIndex, drawingViews.ToDictionary(p => p.Key, p => p.Value.Select(DrawingDocument.Data).ToList()), rig,canvasWidth,canvasHeight,skeletonType,extraFaces.ToList(),selections.ToDictionary(p=>p.Key,p=>p.Value.ToString(System.Globalization.CultureInfo.InvariantCulture)),vertexLimit,edgeGuides.ToDictionary(p=>p.Key,p=>p.Value.ToList()));
+    private EditorDocument Document() => new(2, Output.SelectedIndex, drawingViews.ToDictionary(p => p.Key, p => p.Value.Select(DrawingDocument.Data).ToList()), rig,canvasWidth,canvasHeight,skeletonType,extraFaces.ToList(),selections.ToDictionary(p=>p.Key,p=>p.Value.ToString(System.Globalization.CultureInfo.InvariantCulture)),vertexLimit,edgeGuides.ToDictionary(p=>p.Key,p=>p.Value.ToList()),connectionEdges.Where(ConnectionExists).ToList(),lineEqualities.Where(EqualityExists).ToList());
     private string Snapshot() => JsonSerializer.Serialize(Document());
     private void RecordChange()
     {
@@ -75,6 +76,8 @@ public partial class EditorWindow : Window
             Views.Items.Clear();surfaces.Clear();overlays.Clear();drawingViews.Clear();activeLayers.Clear();
             extraFaces.Clear();extraFaces.AddRange(document.ExtraFaces ?? []);
             edgeGuides.Clear();foreach(var pair in document.EdgeGuides ?? []) edgeGuides[pair.Key]=pair.Value.ToList();
+            connectionEdges.Clear();connectionEdges.AddRange(document.Connections ?? []);
+            lineEqualities.Clear();lineEqualities.AddRange(document.LineEqualities ?? []);
             selectionMasks.Clear();selections.Clear();foreach(var pair in document.Selections ?? []) {var geometry=Geometry.Parse(pair.Value);geometry.Freeze();selections[pair.Key]=geometry;}
             foreach(var pair in loaded) {CreateFaceSurface(pair.Key,FaceName(pair.Key));drawingViews[pair.Key]=pair.Value;activeLayers[pair.Key]=(previousLayers.GetValueOrDefault(pair.Key)==SelectionLayerId && pair.Value.Any(l=>previousIds.GetValueOrDefault(pair.Key)?.Contains(l.Id)==true)) || pair.Value.Any(l=>l.Id==previousLayers.GetValueOrDefault(pair.Key)) ? previousLayers[pair.Key] : pair.Value[0].Id;}
             Views.SelectedItem=Views.Items.Cast<TabItem>().FirstOrDefault(t=>(string)t.Tag==selected) ?? Views.Items[0];

@@ -1,0 +1,8 @@
+{
+  "checks": "PASS",
+  "beforeEdgeBandSamples": 3063,
+  "afterEdgeBandSamples": 1020,
+  "circleWallMaximumRadiusError": 0.01299458011130103,
+  "geometryVertices": 2432,
+  "tipVertices": 1
+}

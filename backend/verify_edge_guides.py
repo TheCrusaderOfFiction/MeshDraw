@@ -9,7 +9,7 @@ for name in ('unmarked','marked','skeletal'):
     sys.argv=['blender','--',str(case/'shape.obj'),mode]
     runpy.run_path(str(Path(__file__).with_name('export_fbx.py')),run_name='__main__')
     report=json.loads((case/'export-summary.json').read_text())
-    if name!='unmarked':assert report['edgeOptimization']['removedVertices']>100,report
+    if name!='unmarked':assert report['edgeOptimization']['removedVertices']+report['edgeOptimization']['flatSurfaceRemovedVertices']>100,report
     assert report['renderVertices']<=100000 and len(report['textures'])==5
     bpy.ops.object.select_all(action='SELECT');bpy.ops.object.delete(use_global=False)
     bpy.ops.import_scene.fbx(filepath=str(case/'mesh.fbx'))

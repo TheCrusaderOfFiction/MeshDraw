@@ -90,12 +90,14 @@ public partial class EditorWindow
     private void RenderRig()
     {
         if(ShowRig==null) return;
+        if(ShowCrossFaceEdges?.IsChecked==true)PrepareCrossFaceEdges();
         var joints=rig.Joints.ToDictionary(j=>j.Id);
         foreach(var pair in overlays)
         {
             var canvas=pair.Value; canvas.Children.Clear();
             canvas.Visibility=Visibility.Visible;
             RenderSelection(canvas,pair.Key);
+            RenderCrossFaceEdges(canvas,pair.Key);
             RenderEdgeGuides(canvas,pair.Key);
             foreach(var bone in rig.Bones.Where(_=>ShowRig.IsChecked==true && !extraFaces.Any(f=>f.Id==pair.Key)))
             {

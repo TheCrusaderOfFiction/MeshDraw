@@ -1,0 +1,17 @@
+Created flat face cleanup: {'faces': 1, 'flattenedVertices': 144, 'removedVertices': 192}
+PASS: rippled face flattened to one quad; closed mesh, opposite face and corners preserved
+Warning: No mesh data to join
+Flat surface cleanup: 816 redundant vertices removed
+Created flat face cleanup: {'faces': 1, 'flattenedVertices': 180, 'removedVertices': 192}
+Vertex limit: 24 / 512 (including texture seams)
+
+FBX export starting... 'C:\\GameProjects\\MeshDraw\\verification\\flat-faces\\mesh.fbx'
+export finished in 0.0045 sec.
+Info: Saved as "mesh.blend"
+FBX export complete: C:\GameProjects\MeshDraw\verification\flat-faces\mesh.fbx
+FBX version: 7400
+PASS: flat face survives vertex budgeting and FBX import with four corner vertices
+Blender 5.1.1 (hash b70da489d7f4 built 2026-04-14 01:37:22)
+OBJ import of 'shape.obj' took 1.41 ms
+
+Blender quit

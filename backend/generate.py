@@ -176,6 +176,7 @@ def finish_generation(job_path, blender, mesh, masks):
     job_path=Path(job_path).resolve()
     job=json.loads(job_path.read_text())
     obj_path=job_path.parent/'shape.obj'
+    (job_path.parent/'round_surfaces.json').write_text(json.dumps(mesh.metadata.get('roundSurfaces',[])),encoding='utf-8')
     if mesh.metadata.get('edgeGuides'):
         (job_path.parent/'edge_guides.json').write_text(json.dumps(mesh.metadata['edgeGuides']),encoding='utf-8')
     else:
@@ -203,7 +204,7 @@ def finish_generation(job_path, blender, mesh, masks):
         'fbx': str(result), 'asset': str(bundle), 'outputType': job['outputType'], 'vertices': summary.get('renderVertices',len(mesh.vertices)),
         'vertexLimit':summary.get('vertexLimit',job.get('vertexLimit',50000)), 'geometryVertices':summary.get('geometryVertices',len(mesh.vertices)),
         'faces': summary.get('triangles',len(mesh.faces)), 'drawingFit': mesh.metadata.get('drawingFit'), 'generationMethod': mesh.metadata.get('generationMethod','AI with six-view constraints'), 'textures': summary.get('textures',{}), 'rig':summary.get('rig'),
-        'roundProfiles':mesh.metadata.get('roundProfiles'),'edgeGuidance':mesh.metadata.get('edgeGuidance'),'edgeOptimization':summary.get('edgeOptimization'),
+        'planarSurfaces':mesh.metadata.get('planarSurfaces',{}),'profileRegistration':mesh.metadata.get('profileRegistration',[]),'roundProfiles':mesh.metadata.get('roundProfiles'),'edgeGuidance':mesh.metadata.get('edgeGuidance'),'edgeOptimization':summary.get('edgeOptimization'),
         'aiViews': ['front', 'back', 'left', 'right'], 'constraintViews': list(masks)}))
     status(f'Complete: {bundle}')
     return bundle

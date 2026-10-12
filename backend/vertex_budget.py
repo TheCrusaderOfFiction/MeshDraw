@@ -1,7 +1,10 @@
 """Blender vertex budgeting, including UV/normal/tangent seam duplication."""
 import bpy
+import bmesh
+import math
 import numpy as np
 from paint_materials import prepare_uv
+from round_shading import smooth_round_normals,restore_round_geometry
 
 
 def read_vertex_limit(job):
@@ -34,21 +37,40 @@ def simplify(mesh,ratio):
     for polygon in mesh.data.polygons:polygon.use_smooth=True
 
 
-def enforce_vertex_budget(mesh,limit):
+def preserve_sharp_shading(mesh):
+    """Split normals at hard corners, keeping rounded faces smoothly shaded."""
+    bm=bmesh.new();bm.from_mesh(mesh.data);bm.normal_update()
+    threshold=math.cos(math.radians(35))
+    for edge in bm.edges:
+        if len(edge.link_faces)==2 and edge.link_faces[0].normal.dot(edge.link_faces[1].normal)<threshold:
+            edge.smooth=False
+    bm.to_mesh(mesh.data);bm.free();mesh.data.update()
+
+
+def enforce_vertex_budget(mesh,limit,round_surfaces=None):
     # Keep the existing laptop triangle budget. Preserve geometry below the cap;
     # only reduce it further if the measured seam count exceeds the user's limit.
     faces=len(mesh.data.polygons);vertices=len(mesh.data.vertices);passes=0
     ratio=min(1,100000/max(1,faces),limit*.95/max(1,vertices) if vertices>limit else 1)
     if ratio<1:simplify(mesh,ratio);passes+=1
     for _ in range(8):
+        restore_round_geometry(mesh,round_surfaces)
+        preserve_sharp_shading(mesh)
         prepare_uv(mesh)
+        round_loops=smooth_round_normals(mesh,round_surfaces)
         count=render_vertex_count(mesh)
-        if count<=limit and len(mesh.data.polygons)<=100000:return count,passes
+        if count<=limit and len(mesh.data.polygons)<=100000:
+            if round_loops:print(f'Analytic circular shading: {round_loops:,} face corners',flush=True)
+            return count,passes
         before=len(mesh.data.polygons)
         simplify(mesh,min(.9,.85*limit/count,95000/max(1,len(mesh.data.polygons))));passes+=1
         if len(mesh.data.polygons)>=before:break
     # A triangle has at most three exported vertices even when every corner splits.
     simplify(mesh,(limit//3)/max(1,len(mesh.data.polygons))*.95);passes+=1
-    prepare_uv(mesh);count=render_vertex_count(mesh)
+    restore_round_geometry(mesh,round_surfaces)
+    preserve_sharp_shading(mesh)
+    prepare_uv(mesh)
+    smooth_round_normals(mesh,round_surfaces)
+    count=render_vertex_count(mesh)
     if count>limit:raise ValueError('Could not meet the vertex limit. Increase Maximum vertices.')
     return count,passes

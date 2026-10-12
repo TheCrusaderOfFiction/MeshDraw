@@ -22,7 +22,7 @@ public partial class EditorWindow
             var outline = Attach(new PaintLayer { Name="Outline", Kind=LayerKind.Artwork });
             var color = Attach(new PaintLayer { Name="Color", Kind=LayerKind.BaseColor });
             drawingViews[name] = [outline, color]; activeLayers[name] = outline.Id;
-            Views.Items.Add(new TabItem { Header=label, Tag=name, Content=new Viewbox { Child=surface, Stretch=Stretch.Uniform } });
+            Views.Items.Add(new TabItem { Header=label, Tag=name, Content=new Viewbox { Child=surface, Stretch=Stretch.Uniform, ClipToBounds=true } });
     }
     private void LoadExtraFaceSettings()
     {
@@ -65,7 +65,7 @@ public partial class EditorWindow
         var face=extraFaces.FirstOrDefault(f=>f.Id==ActiveView);if(face==null) return;
         CancelGuidedStroke();var document=Document();document.Layers.Remove(face.Id);
         document.Selections?.Remove(face.Id);document.EdgeGuides?.Remove(face.Id);
-        ApplyDocument(document with {ExtraFaces=extraFaces.Where(f=>f.Id!=face.Id).ToList()});RecordChange();
+        ApplyDocument(document with {ExtraFaces=extraFaces.Where(f=>f.Id!=face.Id).ToList(),Connections=document.Connections?.Where(c=>c.FaceA!=face.Id && c.FaceB!=face.Id).ToList(),LineEqualities=document.LineEqualities?.Where(r=>new[]{r.Whole.Face,r.First.Face,r.Second.Face}.All(f=>f!=face.Id)).ToList()});RecordChange();
         Status.Text="Removed "+face.Name+". Undo restores the face and its layers.";
     }
     internal static (Vector3D u,Vector3D v,Vector3D normal) FaceBasis(FaceDefinition face)

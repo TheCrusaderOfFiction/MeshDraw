@@ -1,0 +1,65 @@
+{
+  "passed": true,
+  "cases": [
+    {
+      "case": "dense",
+      "vertices": 8,
+      "marks": 2,
+      "removedVertices": 480,
+      "sharpEdges": 4,
+      "weldedCornerVertices": 0,
+      "straightVerticesRemoved": 32,
+      "flattenedEdgeVertices": 36,
+      "singlePointTips": 0,
+      "projectedCornerRidges": 1,
+      "ridgeGuideCoverage": [
+        {
+          "id": null,
+          "removedVertices": 16,
+          "quarters": [
+            4,
+            4,
+            4,
+            4
+          ]
+        },
+        {
+          "id": null,
+          "removedVertices": 16,
+          "quarters": [
+            4,
+            4,
+            4,
+            4
+          ]
+        }
+      ]
+    },
+    {
+      "case": "pointed-cap",
+      "vertices": 8,
+      "marks": 1,
+      "removedVertices": 2,
+      "sharpEdges": 1,
+      "weldedCornerVertices": 2,
+      "straightVerticesRemoved": 0,
+      "flattenedEdgeVertices": 0,
+      "singlePointTips": 0,
+      "projectedCornerRidges": 1,
+      "ridgeGuideCoverage": []
+    },
+    {
+      "case": "rounded-cap",
+      "vertices": 10,
+      "marks": 1,
+      "removedVertices": 0,
+      "sharpEdges": 0,
+      "weldedCornerVertices": 0,
+      "straightVerticesRemoved": 0,
+      "flattenedEdgeVertices": 0,
+      "singlePointTips": 0,
+      "projectedCornerRidges": 0,
+      "ridgeGuideCoverage": []
+    }
+  ]
+}
