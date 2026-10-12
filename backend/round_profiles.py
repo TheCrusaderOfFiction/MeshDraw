@@ -101,7 +101,7 @@ def preserve_round_sections(volume,circles,masks,extent,faces,vertical_center,sc
     return (result,preserved,cylinders) if return_cylinders else (result,preserved)
 
 
-def reconstruct_cylinders(field,cylinders,extent,resolution,volume=None):
+def reconstruct_cylinders(field,cylinders,extent,resolution,volume=None,junction_field=None):
     """Union exact capped cylinder distance fields into the reconstructed hull.
 
     Build the curved wall before triangulation so every side and end rim follows
@@ -121,8 +121,23 @@ def reconstruct_cylinders(field,cylinders,extent,resolution,volume=None):
             # Replace the local cylinder envelope, retaining genuine attachments
             # that extend well beyond it (such as the sword blade).
             margin=3/resolution
-            attachments=binary_dilation(np.pad(volume,4)&(radial < -margin),iterations=3)
-            envelope=(radial > -margin)&(axial > -margin)&~attachments
-            np.copyto(field,exact,where=envelope)
+            # Small rectangular/raster protrusions are not attachments. Seed
+            # from parts extending clearly beyond the cylinder, then reach their
+            # roots in physical units so thin axes do not leave disconnected gaps.
+            from scipy.ndimage import distance_transform_edt
+            seeds=np.pad(volume,4)&(radial < -2*margin)
+            distance=distance_transform_edt(~seeds,sampling=np.asarray(extent)/resolution) if seeds.any() else np.full(field.shape,np.inf)
+            # Avoid placing the zero contour exactly on an integer EDT shell;
+            # marching cubes can otherwise create touching duplicate surfaces.
+            attachment_field=(2*margin+1.125/resolution-distance)*resolution
+            # Guide corrections on the attachment's remote edges must not leave
+            # teeth where its root meets the analytic tube. Blend back to the
+            # smooth hull here, then crop with a continuous distance field.
+            source=field
+            if junction_field is not None:
+                blend=np.clip((radial+2*margin)/margin,0,1)*np.clip((axial+margin)/margin,0,1)
+                source=field*(1-blend)+junction_field*blend
+            cleaned=np.maximum(exact,np.minimum(source,attachment_field))
+            np.copyto(field,cleaned,where=(radial > -2*margin)&(axial > -margin))
         np.maximum(field,exact,out=field)
     return field

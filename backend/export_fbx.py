@@ -17,6 +17,7 @@ from round_shading import load_round_surfaces,smooth_round_normals,capture_round
 from guided_collapse import finalize_guided_strips
 from paint_materials import prepare_uv
 from vertex_budget import preserve_sharp_shading
+from cylinder_caps import rebuild_cylinder_caps,finish_cylinder_caps
 
 def create_humanoid(bone):
     bone('root', (0,0,0), (0,0,.15))
@@ -48,9 +49,12 @@ bpy.ops.object.join()
 mesh = bpy.context.object
 mesh.name = 'MeshDrawObject'
 bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
+raw_round_surfaces=load_round_surfaces(Path(source).parent/'round_surfaces.json',(0,0,0),1.8)
+initial_caps=rebuild_cylinder_caps(mesh,raw_round_surfaces)
 flat_removed=dissolve_flat_surfaces(mesh)
 edge_optimization=optimize_marked_edges(mesh,Path(source).parent/'edge_guides.json')
 edge_optimization['flatSurfaceRemovedVertices']=flat_removed
+edge_optimization['initialCylinderCaps']=initial_caps
 low = Vector(tuple(min((mesh.matrix_world @ v.co)[i] for v in mesh.data.vertices) for i in range(3)))
 high = Vector(tuple(max((mesh.matrix_world @ v.co)[i] for v in mesh.data.vertices) for i in range(3)))
 height = high.z - low.z
@@ -66,6 +70,8 @@ job=json.loads((folder/'job.json').read_text()) if (folder/'job.json').exists() 
 vertex_limit=read_vertex_limit(job)
 round_surfaces=load_round_surfaces(folder/'round_surfaces.json',((low.x+high.x)/2,(low.y+high.y)/2,low.z),height)
 render_vertices,simplification_passes=enforce_vertex_budget(mesh,vertex_limit,round_surfaces)
+edge_optimization['finalCylinderCaps'],render_vertices,cap_passes=finish_cylinder_caps(mesh,round_surfaces,vertex_limit,render_vertices)
+simplification_passes+=cap_passes
 saved_round_normals=capture_round_normals(mesh,round_surfaces)
 edge_optimization['finalStripCleanup']=finalize_guided_strips(mesh,folder/'edge_guides.json',((low.x+high.x)/2,(low.y+high.y)/2,low.z),height,round_surfaces)
 edge_optimization['removedVertices']+=edge_optimization['finalStripCleanup']['removedVertices']

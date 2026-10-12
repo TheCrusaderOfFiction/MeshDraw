@@ -66,12 +66,35 @@ def load_round_surfaces(path,low,height):
     factor=1.8/height
     result=[]
     for surface in json.loads(path.read_text()):
-        result.append(dict(center=(convert(surface['center'])-origin)*factor,u=convert(surface['u']),v=convert(surface['v']),radius=surface['radius']*factor,tolerance=surface['tolerance']*factor))
+        item=dict(center=(convert(surface['center'])-origin)*factor,u=convert(surface['u']),v=convert(surface['v']),radius=surface['radius']*factor,tolerance=surface['tolerance']*factor)
+        if 'axis' in surface and 'low' in surface and 'high' in surface:
+            index=surface['axis'];item.update(axis=convert(np.eye(3)[index]),low=(surface['low']-surface['center'][index])*factor,high=(surface['high']-surface['center'][index])*factor)
+        result.append(item)
     return result
 
 
 def smooth_round_normals(mesh,surfaces):
     if not surfaces:return 0
+    # Tiny junction triangles can acquire sharp edges during reduction. They
+    # belong to the smoothly meeting root, while end caps and true right-angle
+    # blade corners must keep their split normals.
+    import bmesh
+    bm=bmesh.new();bm.from_mesh(mesh.data);bm.normal_update()
+    changed=False
+    for edge in bm.edges:
+        if edge.smooth or len(edge.link_faces)!=2:continue
+        a,b=edge.link_faces
+        if a.normal.dot(b.normal)<np.cos(np.deg2rad(70)):continue
+        for s in surfaces:
+            if 'axis' not in s:continue
+            axis=np.asarray(s['axis'])
+            if max(abs(np.asarray(a.normal)@axis),abs(np.asarray(b.normal)@axis))>.8:continue
+            d=np.asarray([tuple(w.co) for w in edge.verts])-s['center']
+            radii=np.hypot(d@s['u'],d@s['v']);axial=d@axis
+            if ((radii>=s['radius']-s['tolerance']*2)&(radii<=s['radius']+s['tolerance']*2)&(axial>s['low']+s['tolerance']*2)&(axial<s['high']-s['tolerance']*2)).any():
+                edge.smooth=True;changed=True;break
+    if changed:bm.to_mesh(mesh.data);mesh.data.update()
+    bm.free()
     data=mesh.data;data.update()
     positions=np.array([tuple(v.co) for v in data.vertices])
     normals=np.array([tuple(n.vector) for n in data.corner_normals])

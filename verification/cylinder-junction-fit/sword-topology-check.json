@@ -1,0 +1,238 @@
+{
+  "textures": {
+    "basecolor": "mesh_basecolor.png"
+  },
+  "rig": null,
+  "boneCount": 0,
+  "vertexLimit": 10000,
+  "renderVertices": 5975,
+  "normalization": {
+    "origin": [
+      0.3847326412796974,
+      -0.07739598464104347,
+      0.020804865285754204
+    ],
+    "height": 0.9602708388119936
+  },
+  "geometryVertices": 2548,
+  "triangles": 5096,
+  "simplificationPasses": 3,
+  "edgeOptimization": {
+    "marks": 52,
+    "removedVertices": 10039,
+    "sharpEdges": 1529,
+    "weldedCornerVertices": 234,
+    "straightVerticesRemoved": 1408,
+    "flattenedEdgeVertices": 7607,
+    "singlePointTips": 1,
+    "projectedCornerRidges": 4,
+    "ridgeGuideCoverage": [
+      {
+        "id": "861c12aaf348420c8f4e320fd047afd7",
+        "removedVertices": 62,
+        "quarters": [
+          14,
+          11,
+          11,
+          26
+        ]
+      },
+      {
+        "id": "65fb44b77861471ab56363a04b980a91",
+        "removedVertices": 14,
+        "quarters": [
+          0,
+          0,
+          2,
+          12
+        ]
+      },
+      {
+        "id": "672e5c48d0e049ebbc9bc3c228de6974",
+        "removedVertices": 10,
+        "quarters": [
+          0,
+          0,
+          3,
+          7
+        ]
+      },
+      {
+        "id": "65e2da4fcebe495baabc79b62269de20",
+        "removedVertices": 4,
+        "quarters": [
+          1,
+          0,
+          0,
+          3
+        ]
+      },
+      {
+        "id": "926dc60048e344b2ab0d8f8d8197c519",
+        "removedVertices": 2,
+        "quarters": [
+          0,
+          0,
+          0,
+          2
+        ]
+      },
+      {
+        "id": "c18a13b8fa264e9fb8d39b3d7c2c6f18",
+        "removedVertices": 3,
+        "quarters": [
+          0,
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "f3c95b0ebd414d778bc2e57c193430fb",
+        "removedVertices": 2,
+        "quarters": [
+          1,
+          0,
+          0,
+          1
+        ]
+      },
+      {
+        "id": "4d4eaa1b8374422c8001c39e5d76bb6a",
+        "removedVertices": 1,
+        "quarters": [
+          1,
+          0,
+          0,
+          0
+        ]
+      }
+    ],
+    "flatSurfaceRemovedVertices": 82036,
+    "initialCylinderCaps": {
+      "caps": 2,
+      "rimVertices": 1784
+    },
+    "finalCylinderCaps": {
+      "caps": 2,
+      "rimVertices": 443
+    },
+    "finalStripCleanup": {
+      "removedVertices": 1310,
+      "coverage": [
+        {
+          "id": "48f0e58d9ed641659926a69697377946",
+          "removedVertices": 296,
+          "quarters": [
+            34,
+            75,
+            77,
+            110
+          ]
+        },
+        {
+          "id": "3cd8a1b9500248568dda6646d8fb8803",
+          "removedVertices": 346,
+          "quarters": [
+            90,
+            77,
+            76,
+            103
+          ]
+        },
+        {
+          "id": "861c12aaf348420c8f4e320fd047afd7",
+          "removedVertices": 265,
+          "quarters": [
+            61,
+            88,
+            82,
+            34
+          ]
+        },
+        {
+          "id": "9abf809b47fb4e13a647dea0c5201545",
+          "removedVertices": 264,
+          "quarters": [
+            72,
+            52,
+            59,
+            81
+          ]
+        },
+        {
+          "id": "65fb44b77861471ab56363a04b980a91",
+          "removedVertices": 5,
+          "quarters": [
+            0,
+            0,
+            0,
+            5
+          ]
+        },
+        {
+          "id": "672e5c48d0e049ebbc9bc3c228de6974",
+          "removedVertices": 10,
+          "quarters": [
+            0,
+            0,
+            0,
+            10
+          ]
+        },
+        {
+          "id": "2ac0ba33182a44da99ed6349435a506f",
+          "removedVertices": 40,
+          "quarters": [
+            6,
+            12,
+            12,
+            10
+          ]
+        },
+        {
+          "id": "b402f4669fae4fab873cde98e8dde270",
+          "removedVertices": 16,
+          "quarters": [
+            5,
+            2,
+            4,
+            5
+          ]
+        },
+        {
+          "id": "65e2da4fcebe495baabc79b62269de20",
+          "removedVertices": 59,
+          "quarters": [
+            3,
+            4,
+            9,
+            43
+          ]
+        },
+        {
+          "id": "89ee9f170ed1406bbb31bd0eb149debb",
+          "removedVertices": 8,
+          "quarters": [
+            3,
+            3,
+            2,
+            0
+          ]
+        },
+        {
+          "id": "c18a13b8fa264e9fb8d39b3d7c2c6f18",
+          "removedVertices": 1,
+          "quarters": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    "preservedRoundNormalLoops": 8553
+  },
+  "topVertexCount": 1
+}

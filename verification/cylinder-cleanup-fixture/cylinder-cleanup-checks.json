@@ -1,5 +1,5 @@
 {
   "checks": "PASS",
-  "removedBladeVertices": 0,
+  "removedBladeVertices": 480,
   "preservedRoundNormalLoops": 5184
 }

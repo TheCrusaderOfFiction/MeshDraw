@@ -147,7 +147,8 @@ def guide_distance_field(field,raw,contexts,extent,resolution):
     return field
 
 
-def pin_corners(mesh,contexts,extent,resolution):
+def pin_corners(mesh,contexts,extent,resolution,cylinders=None):
+    from cylinder_regions import cylinder_mask,protected_cylinder_vertices
     groups={}
     for c in contexts:
         if c['mark']['Kind']=='Corner' and c['mark'].get('CornerGroup'):
@@ -158,18 +159,22 @@ def pin_corners(mesh,contexts,extent,resolution):
         for c in members:
             projection=np.outer(c['u'],c['u'])+np.outer(c['v'],c['v']);matrix+=projection;rhs+=projection@c['meta']['Point']
         point=np.linalg.solve(matrix+np.eye(3)*1e-8,rhs+mean*1e-8)
+        if cylinder_mask([point],cylinders,2/resolution).any():continue
         distance=np.linalg.norm(mesh.vertices-point,axis=1);index=int(np.argmin(distance))
+        if protected_cylinder_vertices(mesh,cylinders,2/resolution)[index]:continue
         if distance[index]>min(min(c['meta']['Radius'] for c in members),3.5*max(extent)/resolution):continue
         candidate=mesh.copy();vertices=candidate.vertices.copy();vertices[index]=point;candidate.vertices=vertices
         if candidate.is_watertight and candidate.volume>0 and np.all(np.einsum('ij,ij->i',candidate.face_normals,mesh.face_normals)>0):mesh=candidate
     for c in contexts:
         if c['mark']['Kind']!='Corner' or c['mark'].get('CornerStyle','Pointed')=='Rounded' or (c['mark'].get('CornerGroup') and len(groups.get(c['mark']['CornerGroup'],[]))>=2):continue
+        if cylinder_mask([c['meta']['Point']],cylinders,2/resolution).any():continue
         trial=mesh.copy();vertices=trial.vertices.copy();relative=vertices-c['meta']['Point']
         x=relative@c['u'];y=relative@c['v']
         # Only pin the sub-voxel corner cap, never the entire influence region.
         limit=1.25 if c['mark'].get('Mode','Relative')=='Absolute' else 3
         radius=min(c['meta']['Radius'],limit*max(extent)/resolution)
         near=x*x+y*y<=radius*radius
+        near &= ~protected_cylinder_vertices(mesh,cylinders,2/resolution)
         if 'section_normal' in c:near &= abs(relative@c['section_normal'])<=c['meta']['Radius']
         vertices[near]-=x[near,None]*c['u']+y[near,None]*c['v']
         trial.vertices=vertices;trial.merge_vertices(digits_vertex=8)

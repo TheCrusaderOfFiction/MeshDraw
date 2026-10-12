@@ -1,0 +1,254 @@
+Checking closed outlines in all six viewsâ€¦
+Loading the local multiview model with CPU offloadingâ€¦
+2026-10-12 13:09:23,235 - hy3dgen.shapgen - INFO - Try to load model from local path: C:\GameProjects\MeshDraw\local-ai\models\Hunyuan3D-2mv\hunyuan3d-dit-v2-mv
+2026-10-12 13:09:23,242 - hy3dgen.shapgen - INFO - Loading model from C:\GameProjects\MeshDraw\local-ai\models\Hunyuan3D-2mv\hunyuan3d-dit-v2-mv\model.fp16.safetensors
+PointCrossAttentionEncoder INFO: pc_sharpedge_size is given, using pc_size=5120, pc_sharpedge_size=5120
+Generating from front, back, left, and rightâ€¦
+Generating geometry: 1/20 stepsâ€¦
+Diffusion Sampling::   0%|          | 0/20 [00:00<?, ?it/s]
+Generating geometry: 2/20 stepsâ€¦
+Diffusion Sampling::   5%|â–Œ         | 1/20 [00:12<03:55, 12.38s/it]
+Generating geometry: 3/20 stepsâ€¦
+Diffusion Sampling::  10%|â–ˆ         | 2/20 [00:13<01:44,  5.81s/it]
+Generating geometry: 4/20 stepsâ€¦
+Diffusion Sampling::  15%|â–ˆâ–Œ        | 3/20 [00:17<01:23,  4.90s/it]
+Generating geometry: 5/20 stepsâ€¦
+Diffusion Sampling::  20%|â–ˆâ–ˆ        | 4/20 [00:21<01:11,  4.49s/it]
+Generating geometry: 6/20 stepsâ€¦
+Diffusion Sampling::  25%|â–ˆâ–ˆâ–Œ       | 5/20 [00:25<01:03,  4.26s/it]
+Generating geometry: 7/20 stepsâ€¦
+Diffusion Sampling::  30%|â–ˆâ–ˆâ–ˆ       | 6/20 [00:28<00:57,  4.12s/it]
+Generating geometry: 8/20 stepsâ€¦
+Diffusion Sampling::  35%|â–ˆâ–ˆâ–ˆâ–Œ      | 7/20 [00:32<00:52,  4.04s/it]
+Generating geometry: 9/20 stepsâ€¦
+Diffusion Sampling::  40%|â–ˆâ–ˆâ–ˆâ–ˆ      | 8/20 [00:36<00:47,  3.99s/it]
+Generating geometry: 10/20 stepsâ€¦
+Diffusion Sampling::  45%|â–ˆâ–ˆâ–ˆâ–ˆâ–Œ     | 9/20 [00:40<00:43,  3.95s/it]
+Generating geometry: 11/20 stepsâ€¦
+Diffusion Sampling::  50%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆ     | 10/20 [00:44<00:39,  3.93s/it]
+Generating geometry: 12/20 stepsâ€¦
+Diffusion Sampling::  55%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–Œ    | 11/20 [00:48<00:35,  3.92s/it]
+Generating geometry: 13/20 stepsâ€¦
+Diffusion Sampling::  60%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ    | 12/20 [00:52<00:31,  3.90s/it]
+Generating geometry: 14/20 stepsâ€¦
+Diffusion Sampling::  65%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–Œ   | 13/20 [00:56<00:27,  3.90s/it]
+Generating geometry: 15/20 stepsâ€¦
+Diffusion Sampling::  70%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ   | 14/20 [01:00<00:23,  3.89s/it]
+Generating geometry: 16/20 stepsâ€¦
+Diffusion Sampling::  75%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–Œ  | 15/20 [01:03<00:19,  3.89s/it]
+Generating geometry: 17/20 stepsâ€¦
+Diffusion Sampling::  80%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ  | 16/20 [01:07<00:15,  3.89s/it]
+Generating geometry: 18/20 stepsâ€¦
+Diffusion Sampling::  85%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–Œ | 17/20 [01:11<00:11,  3.89s/it]
+Generating geometry: 19/20 stepsâ€¦
+Diffusion Sampling::  90%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ | 18/20 [01:15<00:07,  3.89s/it]
+Generating geometry: 20/20 stepsâ€¦
+Diffusion Sampling::  95%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–Œ| 19/20 [01:19<00:03,  3.89s/it]
+Diffusion Sampling:: 100%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ| 20/20 [01:23<00:00,  3.89s/it]
+Diffusion Sampling:: 100%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ| 20/20 [01:23<00:00,  4.17s/it]
+Volume Decoding:   0%|          | 0/1798 [00:00<?, ?it/s]
+Volume Decoding:   3%|â–Ž         | 49/1798 [00:00<00:04, 418.44it/s]
+Volume Decoding:   5%|â–Œ         | 91/1798 [00:00<00:12, 139.00it/s]
+Volume Decoding:   6%|â–‹         | 114/1798 [00:00<00:14, 120.25it/s]
+Volume Decoding:   7%|â–‹         | 131/1798 [00:01<00:15, 108.99it/s]
+Volume Decoding:   8%|â–Š         | 145/1798 [00:01<00:15, 104.15it/s]
+Volume Decoding:   9%|â–Š         | 157/1798 [00:01<00:16, 100.18it/s]
+Volume Decoding:   9%|â–‰         | 168/1798 [00:01<00:16, 96.93it/s] 
+Volume Decoding:  10%|â–‰         | 179/1798 [00:01<00:17, 94.89it/s]
+Volume Decoding:  11%|â–ˆ         | 189/1798 [00:01<00:17, 94.02it/s]
+Volume Decoding:  11%|â–ˆ         | 199/1798 [00:01<00:17, 93.18it/s]
+Volume Decoding:  12%|â–ˆâ–        | 209/1798 [00:01<00:17, 89.50it/s]
+Volume Decoding:  12%|â–ˆâ–        | 219/1798 [00:02<00:17, 90.18it/s]
+Volume Decoding:  13%|â–ˆâ–Ž        | 229/1798 [00:02<00:17, 87.78it/s]
+Volume Decoding:  13%|â–ˆâ–Ž        | 239/1798 [00:02<00:17, 88.52it/s]
+Volume Decoding:  14%|â–ˆâ–        | 248/1798 [00:02<00:17, 87.12it/s]
+Volume Decoding:  14%|â–ˆâ–        | 258/1798 [00:02<00:17, 88.49it/s]
+Volume Decoding:  15%|â–ˆâ–        | 267/1798 [00:02<00:17, 86.90it/s]
+Volume Decoding:  15%|â–ˆâ–Œ        | 277/1798 [00:02<00:17, 88.56it/s]
+Volume Decoding:  16%|â–ˆâ–Œ        | 287/1798 [00:02<00:16, 89.52it/s]
+Volume Decoding:  16%|â–ˆâ–‹        | 296/1798 [00:02<00:17, 87.69it/s]
+Volume Decoding:  17%|â–ˆâ–‹        | 306/1798 [00:03<00:16, 88.77it/s]
+Volume Decoding:  18%|â–ˆâ–Š        | 315/1798 [00:03<00:17, 87.11it/s]
+Volume Decoding:  18%|â–ˆâ–Š        | 324/1798 [00:03<00:17, 85.63it/s]
+Volume Decoding:  19%|â–ˆâ–Š        | 334/1798 [00:03<00:16, 87.50it/s]
+Volume Decoding:  19%|â–ˆâ–‰        | 343/1798 [00:03<00:16, 86.26it/s]
+Volume Decoding:  20%|â–ˆâ–‰        | 353/1798 [00:03<00:16, 87.45it/s]
+Volume Decoding:  20%|â–ˆâ–ˆ        | 363/1798 [00:03<00:16, 88.89it/s]
+Volume Decoding:  21%|â–ˆâ–ˆ        | 372/1798 [00:03<00:16, 87.46it/s]
+Volume Decoding:  21%|â–ˆâ–ˆ        | 382/1798 [00:03<00:16, 88.28it/s]
+Volume Decoding:  22%|â–ˆâ–ˆâ–       | 392/1798 [00:04<00:15, 88.78it/s]
+Volume Decoding:  22%|â–ˆâ–ˆâ–       | 401/1798 [00:04<00:15, 87.36it/s]
+Volume Decoding:  23%|â–ˆâ–ˆâ–Ž       | 410/1798 [00:04<00:16, 85.53it/s]
+Volume Decoding:  23%|â–ˆâ–ˆâ–Ž       | 420/1798 [00:04<00:15, 87.88it/s]
+Volume Decoding:  24%|â–ˆâ–ˆâ–       | 429/1798 [00:04<00:15, 86.43it/s]
+Volume Decoding:  24%|â–ˆâ–ˆâ–       | 439/1798 [00:04<00:15, 87.86it/s]
+Volume Decoding:  25%|â–ˆâ–ˆâ–       | 448/1798 [00:04<00:15, 86.59it/s]
+Volume Decoding:  25%|â–ˆâ–ˆâ–Œ       | 458/1798 [00:04<00:15, 87.82it/s]
+Volume Decoding:  26%|â–ˆâ–ˆâ–Œ       | 468/1798 [00:04<00:14, 89.00it/s]
+Volume Decoding:  27%|â–ˆâ–ˆâ–‹       | 477/1798 [00:04<00:15, 87.00it/s]
+Volume Decoding:  27%|â–ˆâ–ˆâ–‹       | 486/1798 [00:05<00:15, 85.98it/s]
+Volume Decoding:  28%|â–ˆâ–ˆâ–Š       | 496/1798 [00:05<00:14, 88.03it/s]
+Volume Decoding:  28%|â–ˆâ–ˆâ–Š       | 505/1798 [00:05<00:14, 86.57it/s]
+Volume Decoding:  29%|â–ˆâ–ˆâ–Š       | 515/1798 [00:05<00:14, 88.03it/s]
+Volume Decoding:  29%|â–ˆâ–ˆâ–‰       | 524/1798 [00:05<00:14, 86.39it/s]
+Volume Decoding:  30%|â–ˆâ–ˆâ–‰       | 534/1798 [00:05<00:14, 88.10it/s]
+Volume Decoding:  30%|â–ˆâ–ˆâ–ˆ       | 544/1798 [00:05<00:14, 89.28it/s]
+Volume Decoding:  31%|â–ˆâ–ˆâ–ˆ       | 553/1798 [00:05<00:14, 87.59it/s]
+Volume Decoding:  31%|â–ˆâ–ˆâ–ˆâ–      | 563/1798 [00:05<00:13, 88.51it/s]
+Volume Decoding:  32%|â–ˆâ–ˆâ–ˆâ–      | 572/1798 [00:06<00:14, 87.06it/s]
+Volume Decoding:  32%|â–ˆâ–ˆâ–ˆâ–      | 582/1798 [00:06<00:13, 88.70it/s]
+Volume Decoding:  33%|â–ˆâ–ˆâ–ˆâ–Ž      | 591/1798 [00:06<00:13, 87.06it/s]
+Volume Decoding:  33%|â–ˆâ–ˆâ–ˆâ–Ž      | 601/1798 [00:06<00:13, 88.46it/s]
+Volume Decoding:  34%|â–ˆâ–ˆâ–ˆâ–      | 610/1798 [00:06<00:13, 86.66it/s]
+Volume Decoding:  34%|â–ˆâ–ˆâ–ˆâ–      | 620/1798 [00:06<00:13, 87.73it/s]
+Volume Decoding:  35%|â–ˆâ–ˆâ–ˆâ–Œ      | 630/1798 [00:06<00:13, 88.56it/s]
+Volume Decoding:  36%|â–ˆâ–ˆâ–ˆâ–Œ      | 640/1798 [00:06<00:12, 89.21it/s]
+Volume Decoding:  36%|â–ˆâ–ˆâ–ˆâ–Œ      | 649/1798 [00:06<00:13, 87.79it/s]
+Volume Decoding:  37%|â–ˆâ–ˆâ–ˆâ–‹      | 659/1798 [00:07<00:12, 88.82it/s]
+Volume Decoding:  37%|â–ˆâ–ˆâ–ˆâ–‹      | 668/1798 [00:07<00:13, 86.63it/s]
+Volume Decoding:  38%|â–ˆâ–ˆâ–ˆâ–Š      | 678/1798 [00:07<00:12, 87.77it/s]
+Volume Decoding:  38%|â–ˆâ–ˆâ–ˆâ–Š      | 687/1798 [00:07<00:12, 86.74it/s]
+Volume Decoding:  39%|â–ˆâ–ˆâ–ˆâ–‰      | 697/1798 [00:07<00:12, 88.40it/s]
+Volume Decoding:  39%|â–ˆâ–ˆâ–ˆâ–‰      | 706/1798 [00:07<00:12, 87.46it/s]
+Volume Decoding:  40%|â–ˆâ–ˆâ–ˆâ–‰      | 716/1798 [00:07<00:12, 88.25it/s]
+Volume Decoding:  40%|â–ˆâ–ˆâ–ˆâ–ˆ      | 726/1798 [00:07<00:12, 89.24it/s]
+Volume Decoding:  41%|â–ˆâ–ˆâ–ˆâ–ˆ      | 735/1798 [00:07<00:12, 87.19it/s]
+Volume Decoding:  41%|â–ˆâ–ˆâ–ˆâ–ˆâ–     | 745/1798 [00:08<00:11, 88.47it/s]
+Volume Decoding:  42%|â–ˆâ–ˆâ–ˆâ–ˆâ–     | 754/1798 [00:08<00:12, 86.74it/s]
+Volume Decoding:  42%|â–ˆâ–ˆâ–ˆâ–ˆâ–     | 764/1798 [00:08<00:11, 87.67it/s]
+Volume Decoding:  43%|â–ˆâ–ˆâ–ˆâ–ˆâ–Ž     | 774/1798 [00:08<00:11, 88.94it/s]
+Volume Decoding:  44%|â–ˆâ–ˆâ–ˆâ–ˆâ–Ž     | 783/1798 [00:08<00:11, 87.43it/s]
+Volume Decoding:  44%|â–ˆâ–ˆâ–ˆâ–ˆâ–     | 793/1798 [00:08<00:11, 88.43it/s]
+Volume Decoding:  45%|â–ˆâ–ˆâ–ˆâ–ˆâ–     | 802/1798 [00:08<00:11, 87.23it/s]
+Volume Decoding:  45%|â–ˆâ–ˆâ–ˆâ–ˆâ–Œ     | 812/1798 [00:08<00:11, 88.15it/s]
+Volume Decoding:  46%|â–ˆâ–ˆâ–ˆâ–ˆâ–Œ     | 822/1798 [00:08<00:10, 88.84it/s]
+Volume Decoding:  46%|â–ˆâ–ˆâ–ˆâ–ˆâ–Œ     | 831/1798 [00:09<00:11, 87.08it/s]
+Volume Decoding:  47%|â–ˆâ–ˆâ–ˆâ–ˆâ–‹     | 840/1798 [00:09<00:11, 86.28it/s]
+Volume Decoding:  47%|â–ˆâ–ˆâ–ˆâ–ˆâ–‹     | 850/1798 [00:09<00:10, 87.75it/s]
+Volume Decoding:  48%|â–ˆâ–ˆâ–ˆâ–ˆâ–Š     | 860/1798 [00:09<00:10, 88.39it/s]
+Volume Decoding:  48%|â–ˆâ–ˆâ–ˆâ–ˆâ–Š     | 869/1798 [00:09<00:10, 87.10it/s]
+Volume Decoding:  49%|â–ˆâ–ˆâ–ˆâ–ˆâ–‰     | 879/1798 [00:09<00:10, 88.44it/s]
+Volume Decoding:  49%|â–ˆâ–ˆâ–ˆâ–ˆâ–‰     | 889/1798 [00:09<00:10, 88.92it/s]
+Volume Decoding:  50%|â–ˆâ–ˆâ–ˆâ–ˆâ–‰     | 898/1798 [00:09<00:10, 87.19it/s]
+Volume Decoding:  51%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆ     | 908/1798 [00:09<00:10, 88.89it/s]
+Volume Decoding:  51%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆ     | 917/1798 [00:09<00:10, 87.22it/s]
+Volume Decoding:  52%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–    | 927/1798 [00:10<00:09, 88.25it/s]
+Volume Decoding:  52%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–    | 936/1798 [00:10<00:09, 86.92it/s]
+Volume Decoding:  53%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–Ž    | 946/1798 [00:10<00:09, 87.75it/s]
+Volume Decoding:  53%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–Ž    | 955/1798 [00:10<00:09, 86.89it/s]
+Volume Decoding:  54%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–Ž    | 965/1798 [00:10<00:09, 88.63it/s]
+Volume Decoding:  54%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–    | 974/1798 [00:10<00:10, 79.26it/s]
+Volume Decoding:  55%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–    | 987/1798 [00:10<00:08, 91.41it/s]
+Volume Decoding:  55%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–Œ    | 997/1798 [00:10<00:08, 91.40it/s]
+Volume Decoding:  56%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–Œ    | 1007/1798 [00:11<00:08, 88.25it/s]
+Volume Decoding:  57%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–‹    | 1016/1798 [00:11<00:08, 87.17it/s]
+Volume Decoding:  57%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–‹    | 1026/1798 [00:11<00:08, 88.06it/s]
+Volume Decoding:  58%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–Š    | 1036/1798 [00:11<00:08, 89.26it/s]
+Volume Decoding:  58%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–Š    | 1045/1798 [00:11<00:08, 87.56it/s]
+Volume Decoding:  59%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–Š    | 1054/1798 [00:11<00:08, 86.62it/s]
+Volume Decoding:  59%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–‰    | 1064/1798 [00:11<00:08, 88.08it/s]
+Volume Decoding:  60%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–‰    | 1074/1798 [00:11<00:08, 89.21it/s]
+Volume Decoding:  60%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ    | 1083/1798 [00:11<00:08, 87.39it/s]
+Volume Decoding:  61%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ    | 1092/1798 [00:11<00:08, 86.39it/s]
+Volume Decoding:  61%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–   | 1102/1798 [00:12<00:07, 87.65it/s]
+Volume Decoding:  62%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–   | 1112/1798 [00:12<00:07, 89.18it/s]
+Volume Decoding:  62%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–   | 1121/1798 [00:12<00:07, 87.10it/s]
+Volume Decoding:  63%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–Ž   | 1131/1798 [00:12<00:07, 88.15it/s]
+Volume Decoding:  63%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–Ž   | 1140/1798 [00:12<00:07, 87.02it/s]
+Volume Decoding:  64%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–   | 1150/1798 [00:12<00:07, 88.57it/s]
+Volume Decoding:  64%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–   | 1159/1798 [00:12<00:07, 86.77it/s]
+Volume Decoding:  65%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–Œ   | 1169/1798 [00:12<00:07, 88.22it/s]
+Volume Decoding:  66%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–Œ   | 1178/1798 [00:12<00:07, 87.03it/s]
+Volume Decoding:  66%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–Œ   | 1188/1798 [00:13<00:06, 87.96it/s]
+Volume Decoding:  67%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–‹   | 1197/1798 [00:13<00:06, 86.65it/s]
+Volume Decoding:  67%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–‹   | 1207/1798 [00:13<00:06, 87.80it/s]
+Volume Decoding:  68%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–Š   | 1216/1798 [00:13<00:06, 86.69it/s]
+Volume Decoding:  68%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–Š   | 1226/1798 [00:13<00:06, 88.45it/s]
+Volume Decoding:  69%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–Š   | 1235/1798 [00:13<00:06, 86.88it/s]
+Volume Decoding:  69%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–‰   | 1245/1798 [00:13<00:06, 88.38it/s]
+Volume Decoding:  70%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–‰   | 1254/1798 [00:13<00:06, 86.94it/s]
+Volume Decoding:  70%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ   | 1264/1798 [00:13<00:06, 87.84it/s]
+Volume Decoding:  71%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ   | 1274/1798 [00:14<00:05, 88.45it/s]
+Volume Decoding:  71%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–  | 1283/1798 [00:14<00:05, 86.97it/s]
+Volume Decoding:  72%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–  | 1293/1798 [00:14<00:05, 88.16it/s]
+Volume Decoding:  72%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–  | 1302/1798 [00:14<00:05, 86.72it/s]
+Volume Decoding:  73%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–Ž  | 1312/1798 [00:14<00:05, 88.64it/s]
+Volume Decoding:  73%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–Ž  | 1321/1798 [00:14<00:05, 86.36it/s]
+Volume Decoding:  74%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–  | 1331/1798 [00:14<00:05, 88.46it/s]
+Volume Decoding:  75%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–  | 1340/1798 [00:14<00:05, 86.69it/s]
+Volume Decoding:  75%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–Œ  | 1350/1798 [00:14<00:05, 87.70it/s]
+Volume Decoding:  76%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–Œ  | 1360/1798 [00:15<00:04, 88.33it/s]
+Volume Decoding:  76%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–Œ  | 1369/1798 [00:15<00:04, 86.78it/s]
+Volume Decoding:  77%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–‹  | 1379/1798 [00:15<00:04, 87.65it/s]
+Volume Decoding:  77%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–‹  | 1388/1798 [00:15<00:04, 86.92it/s]
+Volume Decoding:  78%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–Š  | 1398/1798 [00:15<00:04, 88.50it/s]
+Volume Decoding:  78%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–Š  | 1407/1798 [00:15<00:04, 86.81it/s]
+Volume Decoding:  79%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–‰  | 1417/1798 [00:15<00:04, 88.61it/s]
+Volume Decoding:  79%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–‰  | 1426/1798 [00:15<00:04, 86.78it/s]
+Volume Decoding:  80%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–‰  | 1436/1798 [00:15<00:04, 88.22it/s]
+Volume Decoding:  80%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ  | 1445/1798 [00:16<00:04, 86.60it/s]
+Volume Decoding:  81%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ  | 1455/1798 [00:16<00:03, 88.11it/s]
+Volume Decoding:  81%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ– | 1464/1798 [00:16<00:03, 86.60it/s]
+Volume Decoding:  82%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ– | 1474/1798 [00:16<00:03, 87.43it/s]
+Volume Decoding:  82%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ– | 1483/1798 [00:16<00:03, 86.64it/s]
+Volume Decoding:  83%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–Ž | 1493/1798 [00:16<00:03, 87.62it/s]
+Volume Decoding:  84%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–Ž | 1503/1798 [00:16<00:03, 88.67it/s]
+Volume Decoding:  84%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ– | 1512/1798 [00:16<00:03, 86.64it/s]
+Volume Decoding:  85%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ– | 1522/1798 [00:16<00:03, 88.08it/s]
+Volume Decoding:  85%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–Œ | 1531/1798 [00:17<00:03, 86.55it/s]
+Volume Decoding:  86%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–Œ | 1541/1798 [00:17<00:02, 88.08it/s]
+Volume Decoding:  86%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–Œ | 1550/1798 [00:17<00:02, 86.81it/s]
+Volume Decoding:  87%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–‹ | 1560/1798 [00:17<00:02, 88.07it/s]
+Volume Decoding:  87%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–‹ | 1569/1798 [00:17<00:02, 86.80it/s]
+Volume Decoding:  88%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–Š | 1579/1798 [00:17<00:02, 87.97it/s]
+Volume Decoding:  88%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–Š | 1589/1798 [00:17<00:02, 89.06it/s]
+Volume Decoding:  89%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–‰ | 1598/1798 [00:17<00:02, 87.45it/s]
+Volume Decoding:  89%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–‰ | 1608/1798 [00:17<00:02, 88.18it/s]
+Volume Decoding:  90%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–‰ | 1617/1798 [00:17<00:02, 87.07it/s]
+Volume Decoding:  90%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ | 1627/1798 [00:18<00:01, 88.22it/s]
+Volume Decoding:  91%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ | 1637/1798 [00:18<00:01, 89.26it/s]
+Volume Decoding:  92%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–| 1646/1798 [00:18<00:01, 87.02it/s]
+Volume Decoding:  92%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–| 1656/1798 [00:18<00:01, 88.00it/s]
+Volume Decoding:  93%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–Ž| 1665/1798 [00:18<00:01, 86.73it/s]
+Volume Decoding:  93%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–Ž| 1675/1798 [00:18<00:01, 88.12it/s]
+Volume Decoding:  94%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–Ž| 1684/1798 [00:18<00:01, 86.63it/s]
+Volume Decoding:  94%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–| 1694/1798 [00:18<00:01, 88.31it/s]
+Volume Decoding:  95%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–| 1704/1798 [00:18<00:01, 89.33it/s]
+Volume Decoding:  95%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–Œ| 1713/1798 [00:19<00:00, 87.19it/s]
+Volume Decoding:  96%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–Œ| 1723/1798 [00:19<00:00, 88.56it/s]
+Volume Decoding:  96%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–‹| 1732/1798 [00:19<00:00, 87.34it/s]
+Volume Decoding:  97%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–‹| 1742/1798 [00:19<00:00, 88.66it/s]
+Volume Decoding:  97%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–‹| 1751/1798 [00:19<00:00, 87.13it/s]
+Volume Decoding:  98%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–Š| 1761/1798 [00:19<00:00, 88.51it/s]
+Volume Decoding:  98%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–Š| 1770/1798 [00:19<00:00, 86.96it/s]
+Volume Decoding:  99%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–‰| 1780/1798 [00:19<00:00, 88.54it/s]
+Volume Decoding:  99%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–‰| 1789/1798 [00:19<00:00, 86.66it/s]
+Volume Decoding: 100%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ| 1798/1798 [00:20<00:00, 85.36it/s]
+Volume Decoding: 100%|â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ| 1798/1798 [00:20<00:00, 89.65it/s]
+Applying all six silhouette constraintsâ€¦
+Matching geometry to the drawings at high detailâ€¦
+Applying extra angled faces and interior cross-sectionsâ€¦
+Drawing silhouette match: 64.7% (before export)
+Edge marks: 52 applied; 2 outside usable boundaries.
+Exporting FBX with Blenderâ€¦
+Warning: No mesh data to join
+Flat surface cleanup: 106,644 redundant vertices removed
+Refining marked edge strips...
+Refining marked corners...
+Corner ridges: 4 refined; 4 redundant vertices removed
+Removing straight ridge subdivisions...
+Marked edge cleanup: {'marks': 52, 'removedVertices': 8558, 'sharpEdges': 1603, 'weldedCornerVertices': 234, 'straightVerticesRemoved': 101, 'flattenedEdgeVertices': 7352, 'singlePointTips': 1, 'projectedCornerRidges': 4, 'ridgeGuideCoverage': [{'id': '861c12aaf348420c8f4e320fd047afd7', 'removedVertices': 64, 'quarters': [14, 12, 11, 27]}, {'id': '65fb44b77861471ab56363a04b980a91', 'removedVertices': 16, 'quarters': [0, 0, 3, 13]}, {'id': '672e5c48d0e049ebbc9bc3c228de6974', 'removedVertices': 12, 'quarters': [0, 0, 3, 9]}, {'id': '65e2da4fcebe495baabc79b62269de20', 'removedVertices': 4, 'quarters': [1, 0, 0, 3]}, {'id': '926dc60048e344b2ab0d8f8d8197c519', 'removedVertices': 3, 'quarters': [0, 0, 1, 2]}, {'id': 'f3c95b0ebd414d778bc2e57c193430fb', 'removedVertices': 2, 'quarters': [1, 0, 0, 1]}]}
+Analytic circular shading: 2,028 face corners
+Cleaning final exported straight-edge strips...
+Final exported edge-strip cleanup: {'removedVertices': 0, 'coverage': []}
+Baked painted material channels: basecolor
+Vertex limit: 9,011 / 10,000 (including texture seams)
+FBX export starting... 'C:\\GameProjects\\MeshDraw\\outputs\\20261012-130905-85ec28\\mesh.fbx'
+export finished in 0.0252 sec.
+Info: Saved as "mesh.blend"
+FBX export complete: C:\GameProjects\MeshDraw\outputs\20261012-130905-85ec28\mesh.fbx
+Blender 5.1.1 (hash b70da489d7f4 built 2026-04-14 01:37:22)
+OBJ import of 'shape.obj' took 129.81 ms
+Blender quit
+Packaging mesh, materials, skeleton, and layered project for Unrealâ€¦
+Complete: C:\GameProjects\MeshDraw\outputs\20261012-130905-85ec28\asset.meshdrawasset

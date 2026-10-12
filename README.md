@@ -75,3 +75,6 @@ Hard silhouette corners also simplify through depth: their tiny cap subdivisions
 Straight-edge triangle strips are contracted after final vertex budgeting, before UV rebaking and rig weights. This removes near-collinear strip vertices that simple face dissolving leaves behind, with endpoint, hard-corner, closed-volume, and analytic cylinder protection. The final strip cleanup is included in the generation report.
 
 Analytic cylinders are protected during straight-plane corrections, corner welding, and final strip cleanup, including cap interiors and adjacent junction vertices. Existing split normals on circular faces are restored after UV rebuilding so blade simplification does not create longitudinal cylinder shading seams.
+### Cylinder ends and joins
+
+Matching opposite circular profiles retain an analytic cylinder through generation and export. Exposed ends are rebuilt as planar caps with circular rims, including after vertex reduction. Corner and straight-line corrections protect the cylinder and adjoining triangles; the blade and handle join the cylinder through a continuous surface without pulling its walls. Shading preserves cap boundaries and hard blade corners while smoothing small junction triangles. Cap cleanup also respects the selected vertex limit, including texture seams. Regenerate existing drawings to apply these changes.

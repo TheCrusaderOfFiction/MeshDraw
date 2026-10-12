@@ -68,14 +68,17 @@ def straighten_outlines(masks,guides):
         if candidate.any():output[name]=candidate
     return output,effective,{'adjustedLines':adjusted,'method':'boundary-fitted outline correction with tapered influence'}
 
-def straighten_surface(mesh,contexts,resolution):
+def straighten_surface(mesh,contexts,resolution,cylinders=None):
     """Remove sub-voxel reconstruction noise along fitted edges, never cut them."""
     vertices=mesh.vertices.copy();normals=mesh.vertex_normals.copy()
+    from cylinder_regions import protected_cylinder_vertices
+    protected=protected_cylinder_vertices(mesh,cylinders,2/resolution)
     for context in contexts:
         if context['mark']['Kind']!='Straight' or not context['mark'].get('FittedOutline'):continue
         meta=context['meta'];point=np.asarray(meta['Point']);normal=np.asarray(meta['Normal']);end=np.asarray(meta['End']);direction=end-point;length=np.linalg.norm(direction);direction/=length
         relative=vertices-point;offset=relative@normal;along=relative@direction
         near=(abs(offset)<=.75/resolution)&(normals@(-context['inside']*normal)>.95)
+        near &= ~protected
         if 'SectionNormal' in meta:near &= abs(relative@np.asarray(meta['SectionNormal']))<=meta['Radius']
         fade=np.clip(np.minimum(along,length-along)/max(meta['Radius'],1e-8),0,1)
         vertices[near]-=normal*(offset[near]*fade[near])[:,None]

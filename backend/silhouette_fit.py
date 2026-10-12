@@ -158,12 +158,13 @@ def reconstruct_surface(volume,resolution,guidance=None,extent=None,cylinders=No
     gaussian_filter(field,sigma=3,output=field,mode='nearest')
     # Thin features must not disappear after filtering. Restore their center cells.
     field[thin]=np.maximum(field[thin],.05)
+    junction_field=field.copy() if cylinders else None
     if guidance:
         from edge_guidance import guide_distance_field
         guide_distance_field(field,raw,guidance,extent,resolution)
     if cylinders:
         from round_profiles import reconstruct_cylinders
-        reconstruct_cylinders(field,cylinders,extent,resolution,volume)
+        reconstruct_cylinders(field,cylinders,extent,resolution,volume,junction_field)
     vertices,faces,_,_=marching_cubes(field,level=0,spacing=(1/resolution,)*3,allow_degenerate=False)
     vertices+=(.5-4)/resolution
     mesh=trimesh.Trimesh(vertices=vertices,faces=faces,process=True)
@@ -238,13 +239,18 @@ def drawing_fit(ai_mesh,masks,resolution=192,extra_faces=None,extra_masks=None,e
     mesh.apply_scale(extent);mesh.remove_unreferenced_vertices()
     if guidance:
         from outline_guidance import straighten_surface
-        mesh=straighten_surface(mesh,guidance,resolution)
-        mesh=pin_corners(mesh,guidance,extent,resolution)
+        mesh=straighten_surface(mesh,guidance,resolution,cylinders)
+        mesh=pin_corners(mesh,guidance,extent,resolution,cylinders)
     # Preserve marked corner detail through the outline field rather than
     # collapsing nearby 3D vertices toward a potentially inset marker.
     if circles:
         mesh,round_vertices=refine_round_surface(mesh,circles,masks,extent,extra_faces,vertical_center,pixel_scale,resolution)
     else:round_vertices=0
+    for surface in mesh.metadata.get('roundSurfaces',[]):
+        for cylinder in cylinders:
+            if np.linalg.norm(np.asarray(surface['center'])-cylinder['center'])<3/resolution and abs(surface['radius']-cylinder['radius'])<3/resolution:
+                surface.update(axis=cylinder['axis'],low=cylinder['low'],high=cylinder['high'])
+                break
     from planar_surfaces import flatten_supported_planes
     mesh,planar_report=flatten_supported_planes(mesh,guidance,resolution,cylinders)
     metadata=dict(mesh.metadata)
