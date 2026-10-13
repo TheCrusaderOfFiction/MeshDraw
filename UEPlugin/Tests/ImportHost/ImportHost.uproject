@@ -1,7 +1,20 @@
 {
   "FileVersion": 3,
   "EngineAssociation": "5.8",
-  "Modules": [{ "Name": "ImportHost", "Type": "Runtime", "LoadingPhase": "Default" }],
-  "AdditionalPluginDirectories": ["../.."],
-  "Plugins": [{ "Name": "MeshDrawImporter", "Enabled": true }]
+  "Modules": [
+    {
+      "Name": "ImportHost",
+      "Type": "Runtime",
+      "LoadingPhase": "Default"
+    }
+  ],
+  "AdditionalPluginDirectories": [
+    "PluginSource"
+  ],
+  "Plugins": [
+    {
+      "Name": "MeshDrawImporter",
+      "Enabled": true
+    }
+  ]
 }

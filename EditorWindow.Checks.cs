@@ -239,6 +239,10 @@ public partial class EditorWindow
         ResetCanvasView(this,new RoutedEventArgs());Assert(viewSurface.RenderTransform.Value.IsIdentity,"Canvas view reset failed");
         var linePoint=ConstrainRulerPoint(new Point(120,250),new Point(100,100),1,0,50);Assert(linePoint==new Point(120,100),"Straight ruler constraint failed");
         var circlePoint=ConstrainRulerPoint(new Point(120,250),new Point(100,100),2,0,50);Assert(Math.Abs((circlePoint-new Point(100,100)).Length-50)<1e-8,"Circular ruler constraint failed");
+        var arc=RulerArcPoints(new Point(500,0),new Point(0,500),new Point(0,0),500);
+        Assert(arc.Count>100 && arc.All(p=>Math.Abs(((Vector)p).Length-500)<1e-8),"Sparse circular ruler input drifted off its circle");
+        var crossing=RulerArcPoints(new Point(-500,1),new Point(-500,-1),new Point(0,0),Math.Sqrt(250001));
+        Assert(crossing.Count<5 && crossing.All(p=>p.X<0),"Circular ruler jumped across the angle seam");
         var fadeStroke=CreateGuidedStroke(Enumerable.Range(0,11).Select(i=>new Point(i*10,100)).ToList(),new DrawingAttributes {Width=10,Height=10},true,.2);
         Assert(fadeStroke.StylusPoints[0].PressureFactor<.1 && fadeStroke.StylusPoints[5].PressureFactor>.45 && fadeStroke.StylusPoints[^1].PressureFactor<.1,"Fade ends missing");
         var pressureStroke=CreateGuidedStroke(new[]{new Point(0,0),new Point(100,100)},new DrawingAttributes(),false,.2,new[]{.2f,.8f});
@@ -310,6 +314,15 @@ public partial class EditorWindow
         BeginGuidedStroke(overlays["Front"],circleStart);ContinueGuidedStroke(new Point(400,250));EndGuidedStroke(new Point(420,400));
         Assert(ActiveLayer!.Ink.Strokes[^1].StylusPoints.All(p=>Math.Abs((new Point(p.X,p.Y)-RulerCenter("Front")).Length-drawnRadius)<.01),"Circular ruler did not use stroke start radius");
         Assert(Math.Abs(drawnRadius-RulerRadius.Value*640)>20,"Concentric stroke test started on guide edge");
+        Assert(!ActiveLayer!.Ink.Strokes[^1].DrawingAttributes.FitToCurve,"Ruler stroke used freehand curve fitting");
+        StrokeStabilizer.Value=30;StabilizerMethod.SelectedIndex=1;
+        var rulerCenter=RulerCenter("Front");var loopStart=rulerCenter+new Vector(-120,0);
+        BeginGuidedStroke(overlays["Front"],loopStart);
+        for(int i=1;i<=24;i++) ContinueGuidedStroke(rulerCenter+new Vector(-Math.Cos(i*Math.PI/12),Math.Sin(i*Math.PI/12))*120);
+        EndGuidedStroke(loopStart);
+        var ruledCircle=ActiveLayer!.Ink.Strokes[^1];
+        Assert(!ruledCircle.DrawingAttributes.FitToCurve && ruledCircle.StylusPoints.All(p=>Math.Abs((new Point(p.X,p.Y)-rulerCenter).Length-120)<.01),"After-release stabilizer distorted circular ruler");
+        StrokeStabilizer.Value=0;StabilizerMethod.SelectedIndex=0;
         RulerMode.SelectedIndex=0;RulerAngle.Value=0;ApplyDocument(fixture);savedState=Snapshot();
         Tool.SelectedIndex=0;BrushSize.Value=17;BrushOpacity.Value=.35;
         Tool.SelectedIndex=4;BrushSize.Value=43;BrushOpacity.Value=.8;
@@ -549,6 +562,8 @@ public partial class EditorWindow
         using(var stream=File.Create(Path.Combine(folder,"selection-layer-brush-preview.png"))) maskPng.Save(stream);
         ApplyDocument(beforeBrushSelection);Tool.SelectedIndex=0;savedState=Snapshot();
 
+        await CheckVfx(folder);
+        var beforeCurveChecks=Document();CheckCurves(folder);ApplyDocument(beforeCurveChecks);
         CheckFaceCopyAndVertexLimit(folder);
         CheckEdgeGuides(folder);
         CheckLineEquality();

@@ -14,6 +14,10 @@ def straighten_outlines(masks,guides):
         yy,xx=np.ogrid[:mask.shape[0],:mask.shape[1]];effective[name]=[]
         for mark in marks:
             start=np.array([mark['X1'],mark['Y1']],float);end=np.array([mark['X2'],mark['Y2']],float);radius=mark['Radius'];copy=dict(mark)
+            if mark['Kind']=='Curve':
+                from curve_guidance import curve_outline
+                if curve_outline(field,mark):adjusted+=1
+                effective[name].append(copy);continue
             if mark.get('Mode','Relative')=='Absolute':effective[name].append(copy);continue
             if mark['Kind']=='Corner':
                 row=int(np.clip(round(start[1]),0,mask.shape[0]-1));column=int(np.clip(round(start[0]),0,mask.shape[1]-1))
@@ -72,7 +76,7 @@ def straighten_surface(mesh,contexts,resolution,cylinders=None):
     """Remove sub-voxel reconstruction noise along fitted edges, never cut them."""
     vertices=mesh.vertices.copy();normals=mesh.vertex_normals.copy()
     from cylinder_regions import protected_cylinder_vertices
-    protected=protected_cylinder_vertices(mesh,cylinders,2/resolution)
+    protected=protected_cylinder_vertices(mesh,cylinders,8/resolution)
     for context in contexts:
         if context['mark']['Kind']!='Straight' or not context['mark'].get('FittedOutline'):continue
         meta=context['meta'];point=np.asarray(meta['Point']);normal=np.asarray(meta['Normal']);end=np.asarray(meta['End']);direction=end-point;length=np.linalg.norm(direction);direction/=length

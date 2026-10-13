@@ -59,11 +59,11 @@ public sealed record JointData(string Id, double X, double Y, double Z);
 public sealed record BoneData(string Id, string Name, string Head, string Tail, string? Parent);
 public sealed record RigData(List<JointData> Joints, List<BoneData> Bones);
 public sealed record FaceDefinition(string Id, string Name, double Yaw=0, double Pitch=0, double Offset=0, bool IsSection=false, double MoveX=0, double MoveY=0, double MoveZ=0, double Roll=0, string SectionMode="Whole", bool ReverseSection=false);
-public sealed record EdgeGuideData(string Id,string Kind,double X1,double Y1,double X2,double Y2,double Radius=8,string Mode="Relative",string CornerStyle="Pointed",string? LinkGroup=null,bool PositionLocked=false,string? CornerGroup=null,string? LockGroup=null,double Depth1=0,double Depth2=0);
+public sealed record EdgeGuideData(string Id,string Kind,double X1,double Y1,double X2,double Y2,double Radius=8,string Mode="Relative",string CornerStyle="Pointed",string? LinkGroup=null,bool PositionLocked=false,string? CornerGroup=null,string? LockGroup=null,double Depth1=0,double Depth2=0,double? Control1X=null,double? Control1Y=null,double? Control2X=null,double? Control2Y=null);
 public sealed record ConnectionEdgeData(string Id,string FaceA,string GuideA,int EndpointA,string FaceB,string GuideB,int EndpointB);
 public sealed record GuideReference(string Face,string Id);
 public sealed record LineEqualityData(string Id,GuideReference Whole,GuideReference First,GuideReference Second,string Mode="Sections",double Split=.5,bool ReverseFirst=false,bool ReverseSecond=false);
-public sealed record EditorDocument(int Version, int OutputType, Dictionary<string,List<LayerData>> Layers, RigData Skeleton, int CanvasWidth=640, int CanvasHeight=640, string SkeletonType="Custom", List<FaceDefinition>? ExtraFaces=null, Dictionary<string,string>? Selections=null, int VertexLimit=50000, Dictionary<string,List<EdgeGuideData>>? EdgeGuides=null,List<ConnectionEdgeData>? Connections=null,List<LineEqualityData>? LineEqualities=null);
+public sealed record EditorDocument(int Version, int OutputType, Dictionary<string,List<LayerData>> Layers, RigData Skeleton, int CanvasWidth=640, int CanvasHeight=640, string SkeletonType="Custom", List<FaceDefinition>? ExtraFaces=null, Dictionary<string,string>? Selections=null, int VertexLimit=50000, Dictionary<string,List<EdgeGuideData>>? EdgeGuides=null,List<ConnectionEdgeData>? Connections=null,List<LineEqualityData>? LineEqualities=null,VfxSettings? Vfx=null);
 
 public static class DrawingDocument
 {
@@ -111,7 +111,7 @@ public static class DrawingDocument
     {
         ValidateConnections(document);
         ValidateLineEqualities(document);
-        if (document.Version != 2 || document.OutputType is < 0 or > 1 || document.Layers == null || document.Layers.Count != 6+(document.ExtraFaces?.Count ?? 0) || document.Skeleton == null)
+        if (document.Version != 2 || document.OutputType is < 0 or > 2 || document.Layers == null || document.Layers.Count != 6+(document.ExtraFaces?.Count ?? 0) || document.Skeleton == null)
             throw new InvalidDataException("Unsupported project format.");
         if(document.CanvasWidth is <128 or >2048 || document.CanvasHeight is <128 or >2048 || string.IsNullOrWhiteSpace(document.SkeletonType) || document.SkeletonType.Length>80)
             throw new InvalidDataException("Canvas dimensions must be 128–2048 pixels.");
@@ -152,12 +152,17 @@ public static class DrawingDocument
         {
             if(!faceIds.Contains(pair.Key) || pair.Value==null || pair.Value.Count>128) throw new InvalidDataException("Keep at most 128 edge marks on each face.");
             foreach(var guide in pair.Value)
-                if(guide==null || (guide.LockGroup!=null && !System.Text.RegularExpressions.Regex.IsMatch(guide.LockGroup,"^[a-f0-9]{32}$")) || !System.Text.RegularExpressions.Regex.IsMatch(guide.Id ?? "","^[a-f0-9]{32}$") || !guideIds.Add(guide.Id!) || guide.Kind is not ("Straight" or "Corner") || guide.Mode is not ("Relative" or "Absolute") || guide.CornerStyle is not ("Pointed" or "Rounded") || (guide.LinkGroup!=null && !System.Text.RegularExpressions.Regex.IsMatch(guide.LinkGroup,"^[a-f0-9]{32}$")) || (guide.PositionLocked && guide.LinkGroup==null && guide.LockGroup==null) || (guide.CornerGroup!=null && !System.Text.RegularExpressions.Regex.IsMatch(guide.CornerGroup,"^[a-f0-9]{32}$"))
+            {
+                if(guide?.Kind=="Curve" && new[]{(guide.Control1X,document.CanvasWidth),(guide.Control1Y,document.CanvasHeight),(guide.Control2X,document.CanvasWidth),(guide.Control2Y,document.CanvasHeight)}.Any(p=>p.Item1 is not double value || !double.IsFinite(value) || value<0 || value>p.Item2))throw new InvalidDataException("Curve control points must stay inside the canvas.");
+                if(guide==null || (guide.LockGroup!=null && !System.Text.RegularExpressions.Regex.IsMatch(guide.LockGroup,"^[a-f0-9]{32}$")) || !System.Text.RegularExpressions.Regex.IsMatch(guide.Id ?? "","^[a-f0-9]{32}$") || !guideIds.Add(guide.Id!) || guide.Kind is not ("Straight" or "Corner" or "Curve") || guide.Mode is not ("Relative" or "Absolute") || guide.CornerStyle is not ("Pointed" or "Rounded") || (guide.LinkGroup!=null && !System.Text.RegularExpressions.Regex.IsMatch(guide.LinkGroup,"^[a-f0-9]{32}$")) || (guide.PositionLocked && guide.LinkGroup==null && guide.LockGroup==null) || (guide.CornerGroup!=null && !System.Text.RegularExpressions.Regex.IsMatch(guide.CornerGroup,"^[a-f0-9]{32}$"))
                     || !double.IsFinite(guide.Depth1) || !double.IsFinite(guide.Depth2) || Math.Abs(guide.Depth1)>8 || Math.Abs(guide.Depth2)>8 || !double.IsFinite(guide.X1) || !double.IsFinite(guide.Y1) || !double.IsFinite(guide.X2) || !double.IsFinite(guide.Y2) || !double.IsFinite(guide.Radius)
                     || guide.X1<0 || guide.X1>document.CanvasWidth || guide.X2<0 || guide.X2>document.CanvasWidth || guide.Y1<0 || guide.Y1>document.CanvasHeight || guide.Y2<0 || guide.Y2>document.CanvasHeight || guide.Radius is <2 or >64
                     || (guide.Kind=="Straight" && (new Vector(guide.X2-guide.X1,guide.Y2-guide.Y1)).Length<4))
                     throw new InvalidDataException("Invalid straight edge or corner mark.");
+            }
         }
+        if(document.OutputType==2 && document.Vfx==null)throw new InvalidDataException("VFX settings are missing.");
+        if(document.Vfx!=null)VfxSettings.Validate(document.Vfx);
         ValidateRig(document.Skeleton);
     }
     private static void ValidateConnections(EditorDocument document)

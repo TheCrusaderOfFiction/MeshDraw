@@ -72,6 +72,7 @@ public partial class EditorWindow
     }
     private bool BeginGuidedStroke(Canvas canvas,Point point,float pressure=.5f)
     {
+        if(Tool.SelectedIndex==10)return BeginCurveLine(canvas,point);
         if(Tool.SelectedIndex==9) return BeginEdgeGuide(canvas,point);
         if(Tool.SelectedIndex==8) return BeginSelectionGesture(canvas,point);
         if(SelectionEditing)
@@ -88,6 +89,7 @@ public partial class EditorWindow
         strokeGuideCenter=strokeGuideMode==1 ? point : RulerCenter(ActiveView);
         strokeGuideRadius=(point-strokeGuideCenter).Length;
         guidedLayer=layer;guidedCanvas=canvas;guidedAttributes=layer.Ink.DefaultDrawingAttributes.Clone();guidedAttributes.IgnorePressure=false;
+        if(strokeGuideMode>0) guidedAttributes.FitToCurve=false;
         guidedSmoothing=StrokeStabilizer.Value;smoothAfter=StabilizerMethod.SelectedIndex==1;strokeSmoother=new StrokeSmoother(point,pressure,guidedSmoothing/RulerDisplayScale(canvas));guidedPoints.Clear();guidedPressures.Clear();guidedPoints.Add(point);guidedPressures.Add(pressure);
         canvas.CaptureMouse();canvas.CaptureStylus();RenderRig();return true;
     }
@@ -118,6 +120,7 @@ public partial class EditorWindow
     }
     private void ContinueGuidedStroke(Point point,float pressure=.5f)
     {
+        if(curveDragging) {ContinueCurveLine(point);return;}
         if(drawingEdgeGuide) {ContinueEdgeGuide(point);return;}
         if(selectingArea) {ContinueSelectionGesture(point);return;}
         if(movingLayer!=null) {ContinueLayerMove(point);return;}
@@ -131,12 +134,30 @@ public partial class EditorWindow
     private void AppendGuidedPoint(Point point,float pressure,bool endpoint=false)
     {
         point=GuidePoint(point);
+        if(strokeGuideMode==2 && strokeGuideRadius>.001)
+        {
+            var start=guidedPoints[^1];float startPressure=guidedPressures[^1];
+            var arc=RulerArcPoints(start,point,strokeGuideCenter,strokeGuideRadius);
+            for(int i=0;i<arc.Count;i++) {guidedPoints.Add(arc[i]);guidedPressures.Add(startPressure+(pressure-startPressure)*(i+1)/arc.Count);}
+            if(arc.Count>0) return;
+        }
         if((point-guidedPoints[^1]).Length>=.15) {guidedPoints.Add(point);guidedPressures.Add(pressure);}
         else if(endpoint) {guidedPoints[^1]=point;guidedPressures[^1]=pressure;}
+    }
+    internal static List<Point> RulerArcPoints(Point start,Point end,Point center,double radius)
+    {
+        var result=new List<Point>();var a=start-center;var b=end-center;
+        double angle=Math.Atan2(a.Y,a.X),delta=Math.Atan2(Vector.CrossProduct(a,b),Vector.Multiply(a,b));
+        if(radius<=.001 || Math.Abs(delta)*radius<.15) return result;
+        // Draw the circular arc, not chords or fitted curves between sparse input events.
+        int count=Math.Clamp((int)Math.Ceiling(Math.Abs(delta)/Math.Min(Math.PI/90,1.5/radius)),1,8192);
+        for(int i=1;i<=count;i++) {double theta=angle+delta*i/count;result.Add(center+new Vector(Math.Cos(theta),Math.Sin(theta))*radius);}
+        return result;
     }
     private void EndGuidedStroke(Point point,float pressure=.5f)
     {
         if(guidedCanvas==null) return;
+        if(curveDragging) {EndCurveLine(point);return;}
         if(drawingEdgeGuide) {EndEdgeGuide(point);return;}
         if(selectingArea) {EndSelectionGesture(point);return;}
         if(movingLayer!=null) {EndLayerMove(point);return;}
@@ -147,7 +168,9 @@ public partial class EditorWindow
             if(smoothAfter && guidedSmoothing>0)
             {
                 var result=StrokeSmoother.SmoothAfter(guidedPoints,guidedPressures,guidedSmoothing/RulerDisplayScale(guidedCanvas));
-                guidedPoints.Clear();guidedPressures.Clear();foreach(var sample in result) {guidedPoints.Add(GuidePoint(sample.point));guidedPressures.Add(sample.pressure);}
+                guidedPoints.Clear();guidedPressures.Clear();
+                guidedPoints.Add(GuidePoint(result[0].point));guidedPressures.Add(result[0].pressure);
+                foreach(var sample in result.Skip(1)) AppendGuidedPoint(sample.point,sample.pressure);
             }
             else if(guidedSmoothing>0) foreach(var sample in strokeSmoother!.Finish(point,pressure)) AppendGuidedPoint(sample.point,sample.pressure);
             AppendGuidedPoint(point,pressure,true);
@@ -160,6 +183,7 @@ public partial class EditorWindow
     }
     private void CancelGuidedStroke()
     {
+        ClearCurveDraft();
         drawingEdgeGuide=false;movingEdgeGuide=null;
         selectionBrushStroke=false;selectionBrushErase=false;
         CancelSelectionGesture();
@@ -184,6 +208,7 @@ public partial class EditorWindow
     }
     private void RenderBrushGuides(Canvas canvas,string view)
     {
+        RenderCurveDraft(canvas,view);
         if(view==ActiveView && RulerMode?.SelectedIndex>0 && Tool.SelectedIndex<2)
         {
             var center=RulerCenter(view);var brush=new SolidColorBrush(Color.FromArgb(210,55,150,230));double scale=RulerDisplayScale(canvas);

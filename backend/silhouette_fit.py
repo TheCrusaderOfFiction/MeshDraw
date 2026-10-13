@@ -139,7 +139,7 @@ def smooth_surface(mesh,resolution):
     mesh.vertices=np.clip(mesh.vertices,bounds[0],bounds[1])
     return mesh
 
-def reconstruct_surface(volume,resolution,guidance=None,extent=None,cylinders=None):
+def reconstruct_surface(volume,resolution,guidance=None,extent=None,cylinders=None,spheres=None):
     """Extract a rounded sub-voxel surface, rather than marching a binary grid.
 
     Padding closes faces on the drawing bounds. A smoothed signed distance field
@@ -154,17 +154,23 @@ def reconstruct_surface(volume,resolution,guidance=None,extent=None,cylinders=No
     thin |= padded & (radii[components]<=6)
     del components,radii
     field-=distance_transform_edt(~padded).astype(np.float32)
-    raw=field.copy() if guidance else None
+    raw=field.copy() if guidance or cylinders else None
     gaussian_filter(field,sigma=3,output=field,mode='nearest')
     # Thin features must not disappear after filtering. Restore their center cells.
     field[thin]=np.maximum(field[thin],.05)
-    junction_field=field.copy() if cylinders else None
+    # A lightly filtered independent attachment field keeps straight cross-
+    # sections at the tube, without the thin-feature plateaus or broad fillet
+    # produced by smoothing the combined hull.
+    junction_field=gaussian_filter(raw,sigma=1).astype(np.float32) if cylinders else None
     if guidance:
         from edge_guidance import guide_distance_field
         guide_distance_field(field,raw,guidance,extent,resolution)
     if cylinders:
         from round_profiles import reconstruct_cylinders
         reconstruct_cylinders(field,cylinders,extent,resolution,volume,junction_field)
+    if spheres:
+        from sphere_profiles import sphere_field
+        sphere_field(field,spheres,extent,resolution)
     vertices,faces,_,_=marching_cubes(field,level=0,spacing=(1/resolution,)*3,allow_degenerate=False)
     vertices+=(.5-4)/resolution
     mesh=trimesh.Trimesh(vertices=vertices,faces=faces,process=True)
@@ -215,6 +221,8 @@ def drawing_fit(ai_mesh,masks,resolution=192,extra_faces=None,extra_masks=None,e
         volume=section_volume(targets,extra_faces,extra_masks or {},extent,pixel_scale,resolution,vertical_center)
     if extra_faces:volume=constrain_extra_faces(volume,extra_faces,extra_masks or {},extent,pixel_scale,vertical_center)
     from round_profiles import preserve_round_sections
+    from sphere_profiles import sphere_sections,refine_spheres
+    volume,spheres,circles=sphere_sections(volume,circles,masks,extent,extra_faces,vertical_center,pixel_scale,resolution)
     volume,round_sections,cylinders=preserve_round_sections(volume,circles,masks,extent,extra_faces,vertical_center,pixel_scale,return_cylinders=True)
     if volume.sum()<32:raise ValueError('The drawings have no usable shared volume. Check opposite views and proportions.')
     drawing_scores=score_volume(volume,targets)
@@ -235,7 +243,7 @@ def drawing_fit(ai_mesh,masks,resolution=192,extra_faces=None,extra_masks=None,e
     selected,method,scores=candidates[-1]
     from edge_guidance import prepare_guidance,pin_corners
     guidance,guide_report=prepare_guidance(edge_guides,dict(masks,**(extra_masks or {})),extent,extra_faces,vertical_center)
-    mesh=reconstruct_surface(selected,resolution,guidance,extent,cylinders)
+    mesh=reconstruct_surface(selected,resolution,guidance,extent,cylinders,spheres)
     mesh.apply_scale(extent);mesh.remove_unreferenced_vertices()
     if guidance:
         from outline_guidance import straighten_surface
@@ -246,6 +254,8 @@ def drawing_fit(ai_mesh,masks,resolution=192,extra_faces=None,extra_masks=None,e
     if circles:
         mesh,round_vertices=refine_round_surface(mesh,circles,masks,extent,extra_faces,vertical_center,pixel_scale,resolution)
     else:round_vertices=0
+    mesh=refine_spheres(mesh,spheres)
+    mesh.metadata['roundSurfaces']=mesh.metadata.get('roundSurfaces',[])+spheres
     for surface in mesh.metadata.get('roundSurfaces',[]):
         for cylinder in cylinders:
             if np.linalg.norm(np.asarray(surface['center'])-cylinder['center'])<3/resolution and abs(surface['radius']-cylinder['radius'])<3/resolution:
@@ -257,8 +267,8 @@ def drawing_fit(ai_mesh,masks,resolution=192,extra_faces=None,extra_masks=None,e
     mesh=retain_volume_components(mesh,selected,resolution,extent)
     mesh.metadata.update(metadata)
     mesh.metadata['planarSurfaces']=planar_report
-    mesh.metadata['roundProfiles']={'circles':sum(len(p) for p in circles.values()),'correctedVertices':round_vertices,'preservedSections':round_sections,'analyticCylinders':len(cylinders)}
-    mesh.metadata['edgeGuides']=[c['meta'] for c in guidance]
+    mesh.metadata['roundProfiles']={'circles':sum(len(p) for p in circles.values()),'correctedVertices':round_vertices,'preservedSections':round_sections,'analyticCylinders':len(cylinders),'analyticSpheres':len(spheres)}
+    mesh.metadata['edgeGuides']=[c['meta'] for c in guidance]+guide_report.pop('curveMetadata',[])
     mesh.metadata['edgeGuidance']=dict(guide_report,outlineCorrection=outline_report)
     pixel_scale=max(max(np.ptp(np.nonzero(mask)[0])+1,np.ptp(np.nonzero(mask)[1])+1) for mask in masks.values())
     paint_bounds={}

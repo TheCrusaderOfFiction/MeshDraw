@@ -1,6 +1,15 @@
 # MeshDraw
 Draw 3D meshes for Blender and Unreal
 
+### VFX mode · Unreal Niagara
+
+Create a drawing with **VFX · Niagara** as its mode, or choose it in the editor’s mode dropdown. Choose Fire, Smoke, Sparks, or Magic in the bottom panel. Adjust particle rate (burst count for Sparks), lifetime, size, speed, tint, blending, and looping. Spread controls the cone for Fire, Smoke, and Magic; Sparks emit radially. The animated preview is an approximation of the Unreal effect.
+
+Enable **Use Front drawing** to use your painted Front view as a transparent particle sprite. Outline strokes become white so the effect tint can color them; color layers and photos retain their colors. Without this option, the app creates a soft procedural sprite. VFX generation runs locally on the CPU and needs neither six closed outlines nor the mesh AI model.
+
+Generate, then import `asset.meshdrawasset` using the updated Unreal plugin from `UEPlugin/Packaged`. The importer creates a Niagara system, particle material, sprite texture, and source bundle. Open the `NS_MeshDrawVfx` asset to edit it, or drag it into your Unreal level. VFX bundles are intended for Unreal; the Blender importer remains for meshes.
+
+
 ### Move and rotate custom faces in 3D
 
 In **3D view**, choose a custom face in the bottom **Custom face** dropdown (or click its plane with Move/Rotate selected). Choose **Move face** or **Rotate face** and drag in the preview. The axis dropdown chooses movement on X/Y/Z or rotation in yaw/pitch/roll; Screen uses the camera plane for movement and yaw/pitch for rotation. Numeric position and angle fields allow exact changes with **Apply**. Positions are relative to the original view cube (−2 to +2); **Reset face** restores zero translation/rotation and centers a slice. Escape cancels an active drag, and Undo restores a committed change. The original six faces remain fixed. Custom transforms persist in the drawing and are used for generation, texture projection, and edge marks.
@@ -77,4 +86,12 @@ Straight-edge triangle strips are contracted after final vertex budgeting, befor
 Analytic cylinders are protected during straight-plane corrections, corner welding, and final strip cleanup, including cap interiors and adjacent junction vertices. Existing split normals on circular faces are restored after UV rebuilding so blade simplification does not create longitudinal cylinder shading seams.
 ### Cylinder ends and joins
 
-Matching opposite circular profiles retain an analytic cylinder through generation and export. Exposed ends are rebuilt as planar caps with circular rims, including after vertex reduction. Corner and straight-line corrections protect the cylinder and adjoining triangles; the blade and handle join the cylinder through a continuous surface without pulling its walls. Shading preserves cap boundaries and hard blade corners while smoothing small junction triangles. Cap cleanup also respects the selected vertex limit, including texture seams. Regenerate existing drawings to apply these changes.
+Matching opposite circular profiles retain an analytic cylinder through generation and export. Exposed ends are rebuilt as planar caps with circular rims, including after vertex reduction. Corner and straight-line corrections protect the cylinder and adjoining triangles. Attachment cross-sections extend straight into the cylinder and meet it with a crisp intersection, rather than a rounded weld-like buildup. Shading preserves cap boundaries and hard blade corners. Cap cleanup also respects the selected vertex limit, including texture seams. Regenerate existing drawings to apply these changes.
+
+Matching circles in at least two perpendicular views infer a sphere for that isolated component. Their centers and radii must agree, and the sphere must fit the other drawings and inside sections. Opposite circular ends with rectangular side views remain cylindrical; incompatible profiles keep their drawn shape. Spheres retain a constant radius and smooth shading through vertex reduction and Blender/Unreal export, and separate spheres remain separate components. Regenerate existing drawings to apply sphere detection.
+
+### Curves and painted straight lines
+
+Choose **Curve**, drag the two ends, then drag the two blue control points to bend the line. Select **Drawing + geometry guide**, **Drawing only**, or **Geometry guide only**, then **Apply line**. Cancel discards the preview. The same tool can create a straight line. Click a saved curved guide with Curve selected to edit it; painting again replaces its associated stroke on the selected layer. Curves save with the drawing, support undo and mirrored face copying, and appear in the 3D edge preview. Place geometry guides along an outline boundary so generation follows the curve without treating it as a straight, flat edge.
+
+In **Edges**, enable **Also paint new straight lines** to draw new straight guides using the current brush color and size. Choose **Paint existing line · tap** to paint an existing straight or curved guide onto the selected layer.

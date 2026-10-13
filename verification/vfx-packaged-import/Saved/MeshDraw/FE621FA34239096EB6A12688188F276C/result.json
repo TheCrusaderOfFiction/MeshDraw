@@ -1,0 +1,7 @@
+{
+  "outputType": "vfx",
+  "effect": "effect.json",
+  "sprite": "vfx_sprite.png",
+  "asset": "asset.meshdrawasset",
+  "preset": "Sparks"
+}

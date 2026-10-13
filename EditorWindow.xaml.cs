@@ -52,11 +52,12 @@ public partial class EditorWindow : Window
         layer.Ink.Strokes.StrokesChanged += (_, _) => { if (!syncing) { RecordChange(); Layers.Items.Refresh(); RefreshOppositeShadows(); MarkOutlinePreviewDirty(); } };
         return layer;
     }
-    private EditorDocument Document() => new(2, Output.SelectedIndex, drawingViews.ToDictionary(p => p.Key, p => p.Value.Select(DrawingDocument.Data).ToList()), rig,canvasWidth,canvasHeight,skeletonType,extraFaces.ToList(),selections.ToDictionary(p=>p.Key,p=>p.Value.ToString(System.Globalization.CultureInfo.InvariantCulture)),vertexLimit,edgeGuides.ToDictionary(p=>p.Key,p=>p.Value.ToList()),connectionEdges.Where(ConnectionExists).ToList(),lineEqualities.Where(EqualityExists).ToList());
+    private EditorDocument Document() => new(2, Output.SelectedIndex, drawingViews.ToDictionary(p => p.Key, p => p.Value.Select(DrawingDocument.Data).ToList()), rig,canvasWidth,canvasHeight,skeletonType,extraFaces.ToList(),selections.ToDictionary(p=>p.Key,p=>p.Value.ToString(System.Globalization.CultureInfo.InvariantCulture)),vertexLimit,edgeGuides.ToDictionary(p=>p.Key,p=>p.Value.ToList()),connectionEdges.Where(ConnectionExists).ToList(),lineEqualities.Where(EqualityExists).ToList(),vfxSettings);
     private string Snapshot() => JsonSerializer.Serialize(Document());
     private void RecordChange()
     {
         if (syncing || drawingViews.Count < 6) return;
+        if(Output.SelectedIndex==2 && vfxSettings?.UseDrawing==true)vfxSprite=null;
         var state = Snapshot();
         if (undo.Count > 0 && undo[^1] == state) return;
         undo.Add(state); if (undo.Count > 24) undo.RemoveAt(0); redo.Clear(); MarkOutlinePreviewDirty();
@@ -84,7 +85,7 @@ public partial class EditorWindow : Window
             selectedFaces.IntersectWith(drawingViews.Keys);InitializeFaceSelection();
             canvasWidth=document.CanvasWidth;canvasHeight=document.CanvasHeight;skeletonType=document.SkeletonType;
             rig = document.Skeleton; selectedBone = rig.Bones.Any(b => b.Id==selectedBone) ? selectedBone : null;
-            Output.SelectedIndex=document.OutputType;LoadVertexLimit(document.VertexLimit);
+            vfxSettings=document.Vfx;LoadVfxSettings();Output.SelectedIndex=document.OutputType;LoadVertexLimit(document.VertexLimit);
         }
         finally { syncing=false; }
         SetViewLayout(viewLayout);RefreshEditor();
@@ -242,7 +243,8 @@ public partial class EditorWindow : Window
             overlays[pair.Key].IsHitTestVisible=pair.Key==ActiveView && (Tool.SelectedIndex==9 ||  (Tool.SelectedIndex is 0 or 1 && RulerMode.SelectedIndex>0) ||Tool.SelectedIndex is 2 or 3 || ((Tool.SelectedIndex==8 || Tool.SelectedIndex==0 || Tool.SelectedIndex>=4 || (Tool.SelectedIndex==1 && (SelectionEditing || ActiveLayer?.Photo!=null || selections.ContainsKey(ActiveView) || selectedFaces.Any(f=>f!=ActiveView)))) && (SelectionEditing || Tool.SelectedIndex==8 || PositionRuler.IsChecked==true || ActiveLayer is {Locked:false,Visible:true,Opacity:>0})));
         }
         UpdatePaintControls(color); UpdateContextSettings();
-        ToolHint.Text=Tool.SelectedIndex==9 ? "Drag along a straight outline edge, tap a sharp corner, or erase a mark. Orange marks guide geometry and stay out of textures." : SelectionEditing ? "Selection layer: Brush adds highlighted areas; Eraser removes them; Select makes shapes. Choose a paint layer to draw inside the finished mask." : Tool.SelectedIndex switch {
+        ToolHint.Text=Tool.SelectedIndex==9 ? "Drag a straight outline edge or mark a corner. Enable Also paint new straight lines, or choose Paint existing line to draw a guide onto the layer." : SelectionEditing ? "Selection layer: Brush adds highlighted areas; Eraser removes them; Select makes shapes. Choose a paint layer to draw inside the finished mask." : Tool.SelectedIndex switch {
+            10 => "Drag endpoints, bend the blue control points, then Apply line. Choose drawing, geometry guide, or both.",
             8 => "Draw a selection with a rectangle, ellipse, or lasso. Paint stays inside the blue area on this face. Clear selection to paint anywhere.",
             7 => "Drag on the canvas to move the selected layer. Flip buttons mirror the selected layer. Unlock the layer first.",
             2 => "Drag from an existing joint to branch a bone. Start in empty space to create a new root branch.",
@@ -258,7 +260,7 @@ public partial class EditorWindow : Window
                 LayerKind.BaseColor => "Paint surface colors. These are baked to a UV texture.",
                 _ => "Outline defines shape. Draw closed outlines, then choose Color to paint underneath." }};
     }
-    private void OutputChanged(object sender, SelectionChangedEventArgs e) { if (!syncing) RecordChange(); }
+    private void OutputChanged(object sender, SelectionChangedEventArgs e) { if (!syncing) {UpdateVfxMode();RecordChange();} }
     private void SaveProject(object sender, RoutedEventArgs e) => SaveDrawing(false);
     private void SaveDrawingCopy(object sender, RoutedEventArgs e) => SaveDrawing(true);
     private void OpenProject(object sender, RoutedEventArgs e)

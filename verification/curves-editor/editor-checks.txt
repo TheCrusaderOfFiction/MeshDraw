@@ -1,0 +1,4 @@
+System.Exception: Absolute line is not green
+   at MeshDraw.EditorWindow.CheckEdgeGuides(String folder)
+   at MeshDraw.EditorWindow.RunChecks(String folder) in C:\GameProjects\MeshDraw\EditorWindow.Checks.cs:line 567
+   at MeshDraw.App.OnStartup(StartupEventArgs e) in C:\GameProjects\MeshDraw\App.xaml.cs:line 12

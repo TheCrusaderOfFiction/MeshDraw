@@ -122,6 +122,7 @@ public partial class EditorWindow
             PreviewEdgeSegment(scene,a,b,GuideDisplayColor(pair.Key,line),(pair.Key,line.Id));
             if(line.LinkGroup!=null && (!line.PositionLocked || line.LockGroup!=null)){if(!groups.ContainsKey(line.LinkGroup))groups[line.LinkGroup]=[];groups[line.LinkGroup].Add((a,b));}
         }
+        foreach(var pair in edgeGuides)foreach(var curve in pair.Value.Where(g=>g.Kind=="Curve")) {var points=GuidePathPoints(curve);int step=Math.Max(1,points.Count/64);for(int i=step;i<points.Count+step;i+=step) {var a=points[Math.Min(i-step,points.Count-1)];var b=points[Math.Min(i,points.Count-1)];PreviewEdgeSegment(scene,FacePlanePoint(pair.Key,a.X/canvasWidth,a.Y/canvasHeight),FacePlanePoint(pair.Key,b.X/canvasWidth,b.Y/canvasHeight),GuideDisplayColor(pair.Key,curve),(pair.Key,curve.Id));}}
         RenderPreviewLockMarkers(scene);
         RenderLineEqualities(scene);
         RenderPreviewCorners(scene);
@@ -166,7 +167,7 @@ public partial class EditorWindow
         }
         string kind=PreviewSelectionMode.SelectedIndex==1?"Corner":"Straight";
         (string face,string id)? picked=null;
-        VisualTreeHelper.HitTest(OutlineViewport,null,result=>{if(result is RayMeshGeometry3DHitTestResult hit && hit.ModelHit is GeometryModel3D model && previewEdgeModels.TryGetValue(model,out var entry) && edgeGuides.GetValueOrDefault(entry.face)?.Any(g=>g.Id==entry.id && g.Kind==kind)==true){picked=entry;return HitTestResultBehavior.Stop;}return HitTestResultBehavior.Continue;},new PointHitTestParameters(e.GetPosition(OutlineViewport)));
+        VisualTreeHelper.HitTest(OutlineViewport,null,result=>{if(result is RayMeshGeometry3DHitTestResult hit && hit.ModelHit is GeometryModel3D model && previewEdgeModels.TryGetValue(model,out var entry) && edgeGuides.GetValueOrDefault(entry.face)?.Any(g=>g.Id==entry.id && (kind=="Straight" ? g.Kind!="Corner" : g.Kind==kind))==true){picked=entry;return HitTestResultBehavior.Stop;}return HitTestResultBehavior.Continue;},new PointHitTestParameters(e.GetPosition(OutlineViewport)));
         if(picked is not {} target)return false;
         var guide=edgeGuides[target.face].First(g=>g.Id==target.id);
         if(guide.Kind=="Corner" && guide.CornerGroup!=null)

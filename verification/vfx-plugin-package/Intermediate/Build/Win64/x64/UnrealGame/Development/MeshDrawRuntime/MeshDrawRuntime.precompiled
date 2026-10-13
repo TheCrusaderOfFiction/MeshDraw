@@ -1,0 +1,7 @@
+{
+	"OutputFiles": [
+		"Module.MeshDrawRuntime.cpp.obj",
+		"MeshDrawRuntime.cpp.obj"
+	],
+	"ToolChainVersion": "14.50.35738"
+}

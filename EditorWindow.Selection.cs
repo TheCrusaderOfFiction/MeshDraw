@@ -49,6 +49,7 @@ public partial class EditorWindow
         CancelGuidedStroke();selectionBrushStroke=true;selectionBrushErase=Tool.SelectedIndex==1;
         guidedLayer=ActiveLayer;guidedCanvas=canvas;guidedAttributes=new DrawingAttributes {Color=Colors.DodgerBlue,Width=BrushSize.Value,Height=BrushSize.Value,FitToCurve=true,IgnorePressure=false};
         strokeGuideMode=RulerMode.SelectedIndex;strokeGuideAngle=RulerAngle.Value;strokeGuideCenter=strokeGuideMode==1 ? point : RulerCenter(ActiveView);strokeGuideRadius=(point-strokeGuideCenter).Length;
+        if(strokeGuideMode>0) guidedAttributes.FitToCurve=false;
         guidedSmoothing=StrokeStabilizer.Value;smoothAfter=StabilizerMethod.SelectedIndex==1;strokeSmoother=new StrokeSmoother(point,pressure,guidedSmoothing/RulerDisplayScale(canvas));
         guidedPoints.Clear();guidedPressures.Clear();guidedPoints.Add(point);guidedPressures.Add(pressure);
         canvas.CaptureMouse();canvas.CaptureStylus();RenderRig();return true;

@@ -30,6 +30,7 @@ public partial class EditorWindow
         SmudgeTool.BorderBrush=Tool.SelectedIndex==5 ? Brushes.DeepSkyBlue : Brushes.SlateGray;
         MoveLayerTool.BorderBrush=Tool.SelectedIndex==7 ? Brushes.DeepSkyBlue : Brushes.SlateGray;
         EdgeGuideTool.BorderBrush=Tool.SelectedIndex==9 ? Brushes.DarkOrange : Brushes.SlateGray;
+        CurveTool.BorderBrush=Tool.SelectedIndex==10 ? Brushes.DeepSkyBlue : Brushes.SlateGray;
         SelectionTool.BorderBrush=Tool.SelectedIndex==8 ? Brushes.DeepSkyBlue : Brushes.SlateGray;
         BucketTool.BorderBrush=Tool.SelectedIndex==6 ? Brushes.DeepSkyBlue : Brushes.SlateGray;
         if(syncingColor) return;

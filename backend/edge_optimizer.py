@@ -216,6 +216,7 @@ def optimize_marked_edges(mesh,path):
         if round_region_mask([tuple(w.co) for w in edge.verts],round_surfaces).any():continue
         midpoint=np.array(tuple((edge.verts[0].co+edge.verts[1].co)/2))
         for g in prepared:
+            if g['kind']=='Curve':continue
             if g['kind']=='Corner' and g['corner_style']=='Rounded':continue
             relative=midpoint-g['point']
             if g['kind']=='Straight':

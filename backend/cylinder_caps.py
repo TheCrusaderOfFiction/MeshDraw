@@ -7,6 +7,7 @@ from mathutils import Vector
 def rebuild_cylinder_caps(mesh,surfaces):
     report=dict(caps=0,rimVertices=0)
     for s in surfaces:
+        if s.get('kind')=='sphere':continue
         center=np.asarray(s['center']);u=np.asarray(s['u']);v=np.asarray(s['v']);axis=np.asarray(s.get('axis',np.cross(u,v)),dtype=float);axis/=np.linalg.norm(axis)
         bm=bmesh.new();bm.from_mesh(mesh.data);bm.normal_update();xyz=np.array([tuple(w.co) for w in bm.verts]);relative=xyz-center
         radius=np.hypot(relative@u,relative@v);near=radius<=s['radius']+s['tolerance']

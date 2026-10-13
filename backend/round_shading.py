@@ -6,7 +6,8 @@ import numpy as np
 def round_region_mask(positions,surfaces):
     positions=np.asarray(positions);mask=np.zeros(len(positions),bool)
     for s in surfaces or []:
-        d=positions-s['center'];mask |= np.hypot(d@s['u'],d@s['v'])<=s['radius']+s['tolerance']
+        d=positions-s['center'];distance=np.linalg.norm(d,axis=1) if s.get('kind')=='sphere' else np.hypot(d@s['u'],d@s['v'])
+        mask |= distance<=s['radius']+s['tolerance']
     return mask
 
 
@@ -32,8 +33,7 @@ def capture_round_normals(mesh,surfaces):
     """Keep split cap/wall normals before unrelated blade topology changes."""
     if not surfaces:return {}
     data=mesh.data;data.update();xyz=np.array([tuple(w.co) for w in data.vertices]);inside=np.zeros(len(xyz),bool)
-    for s in surfaces:
-        d=xyz-s['center'];inside |= np.hypot(d@s['u'],d@s['v'])<=s['radius']+s['tolerance']
+    inside=round_region_mask(xyz,surfaces)
     saved={}
     for face in data.polygons:
         if not inside[np.array(face.vertices)].any():continue
@@ -67,6 +67,7 @@ def load_round_surfaces(path,low,height):
     result=[]
     for surface in json.loads(path.read_text()):
         item=dict(center=(convert(surface['center'])-origin)*factor,u=convert(surface['u']),v=convert(surface['v']),radius=surface['radius']*factor,tolerance=surface['tolerance']*factor)
+        item['kind']=surface.get('kind','cylinder')
         if 'axis' in surface and 'low' in surface and 'high' in surface:
             index=surface['axis'];item.update(axis=convert(np.eye(3)[index]),low=(surface['low']-surface['center'][index])*factor,high=(surface['high']-surface['center'][index])*factor)
         result.append(item)
@@ -105,8 +106,8 @@ def smooth_round_normals(mesh,surfaces):
     selected=np.zeros(len(normals),bool)
     for s in surfaces:
         relative=positions-s['center'];x=relative@s['u'];y=relative@s['v']
-        radius=np.hypot(x,y)
-        radial=(x[:,None]*s['u']+y[:,None]*s['v'])/np.maximum(radius[:,None],1e-12)
+        radius=np.linalg.norm(relative,axis=1) if s.get('kind')=='sphere' else np.hypot(x,y)
+        radial=(relative if s.get('kind')=='sphere' else x[:,None]*s['u']+y[:,None]*s['v'])/np.maximum(radius[:,None],1e-12)
         near=abs(radius-s['radius'])<s['tolerance']
         aligned=np.einsum('ij,ij->i',face_normals,radial[indices])>.9
         use=near[indices]&aligned
@@ -128,8 +129,8 @@ def restore_round_geometry(mesh,surfaces):
     lengths=np.linalg.norm(old_cross,axis=1)
     face_normals=old_cross/np.maximum(lengths[:,None],1e-12)
     for s in surfaces:
-        relative=positions-s['center'];x=relative@s['u'];y=relative@s['v'];radius=np.hypot(x,y)
-        radial=(x[:,None]*s['u']+y[:,None]*s['v'])/np.maximum(radius[:,None],1e-12)
+        relative=positions-s['center'];x=relative@s['u'];y=relative@s['v'];radius=np.linalg.norm(relative,axis=1) if s.get('kind')=='sphere' else np.hypot(x,y)
+        radial=(relative if s.get('kind')=='sphere' else x[:,None]*s['u']+y[:,None]*s['v'])/np.maximum(radius[:,None],1e-12)
         side=np.einsum('ij,ij->i',face_normals,radial[triangles].mean(axis=1))>.95
         near=abs(radius-s['radius'])<s['tolerance']
         chosen=np.zeros(len(positions),bool);chosen[np.unique(triangles[side])]=True;chosen &= near

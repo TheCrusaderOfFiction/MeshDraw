@@ -38,12 +38,12 @@ public partial class EditorWindow
             if(layer is {Locked:false,Visible:true,Opacity:>0}) yield return (face,layer);
         }
     }
-    private void CommitFaceStroke(PaintLayer layer,Stroke stroke)
+    private void CommitFaceStroke(PaintLayer layer,Stroke stroke,bool record=true)
     {
         syncing=true;
         try {foreach(var target in FaceTargets(layer)) {var copy=stroke.Clone();if(OppositeFace(ActiveView)==target.face) copy.Transform(ActiveView is "Top" or "Bottom" ? new Matrix(1,0,0,-1,0,canvasHeight) : new Matrix(-1,0,0,1,canvasWidth,0),false);if(SelectionFor(target.face) is { } selection) CommitSelectedStroke(target.layer,copy,selection);else target.layer.Ink.Strokes.Add(copy);}}
         finally {syncing=false;}
-        RecordChange();Layers.Items.Refresh();RefreshOppositeShadows();
+        if(record) RecordChange();Layers.Items.Refresh();RefreshOppositeShadows();
     }
     private void ShadowChanged(object sender,RoutedEventArgs e) {if(drawingViews.Count>=6) RefreshOppositeShadows();}
     private void RefreshOppositeShadows()
@@ -77,14 +77,15 @@ public partial class EditorWindow
     }
     private void UpdateContextSettings()
     {
-        if(PenSettings==null) return;int tool=Tool.SelectedIndex;
-        SizeOpacitySettings.Visibility=tool is 2 or 3 or 7 or 8 or 9 ? Visibility.Collapsed : Visibility.Visible;
+        if(PenSettings==null) return;int tool=Tool.SelectedIndex;UpdateVfxMode();
+        SizeOpacitySettings.Visibility=tool is 2 or 3 or 7 or 8 ? Visibility.Collapsed : Visibility.Visible;
         SizeLabel.Visibility=BrushSize.Visibility=tool==6 ? Visibility.Collapsed : Visibility.Visible;
         EdgeGuideSettings.Visibility=tool==9 ? Visibility.Visible : Visibility.Collapsed;
+        CurveSettings.Visibility=tool==10 ? Visibility.Visible : Visibility.Collapsed;
         SelectionSettings.Visibility=(SelectionEditing && tool!=9) || tool==8 ? Visibility.Visible : Visibility.Collapsed;
         OpacityLabel.Visibility=BrushOpacity.Visibility=SelectionEditing ? Visibility.Collapsed : Visibility.Visible;
-        PenSettings.Visibility=tool==0 ? Visibility.Visible : Visibility.Collapsed;
-        ColorSettings.Visibility=!SelectionEditing && tool is 0 or 6 ? Visibility.Visible : Visibility.Collapsed;
+        PenSettings.Visibility=tool is 0 or 10 ? Visibility.Visible : Visibility.Collapsed;
+        ColorSettings.Visibility=!SelectionEditing && tool is 0 or 6 or 9 or 10 ? Visibility.Visible : Visibility.Collapsed;
         RasterSettings.Visibility=!SelectionEditing && tool is 4 or 5 ? Visibility.Visible : Visibility.Collapsed;
         BucketSettings.Visibility=!SelectionEditing && tool==6 ? Visibility.Visible : Visibility.Collapsed;
     }

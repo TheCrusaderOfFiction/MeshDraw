@@ -1,0 +1,42 @@
+{
+  "textures": {},
+  "rig": null,
+  "boneCount": 0,
+  "vertexLimit": 4000,
+  "renderVertices": 3424,
+  "normalization": {
+    "origin": [
+      0.500000013038516,
+      -0.20370367498253472,
+      -0.001532536349259317
+    ],
+    "height": 0.6747379716252908
+  },
+  "geometryVertices": 2972,
+  "triangles": 5940,
+  "simplificationPasses": 2,
+  "edgeOptimization": {
+    "marks": 1,
+    "removedVertices": 71,
+    "sharpEdges": 0,
+    "weldedCornerVertices": 0,
+    "straightVerticesRemoved": 0,
+    "flattenedEdgeVertices": 0,
+    "singlePointTips": 0,
+    "projectedCornerRidges": 0,
+    "ridgeGuideCoverage": [],
+    "flatSurfaceRemovedVertices": 23568,
+    "initialCylinderCaps": {
+      "caps": 0,
+      "rimVertices": 0
+    },
+    "finalCylinderCaps": {
+      "caps": 0,
+      "rimVertices": 0
+    },
+    "finalStripCleanup": {
+      "removedVertices": 0,
+      "coverage": []
+    }
+  }
+}

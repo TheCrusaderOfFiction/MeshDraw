@@ -57,12 +57,15 @@ public partial class EditorWindow
                 if(mirror) {var layer=DrawingDocument.Layer(clone);TransformLayer(layer,matrix);clone=DrawingDocument.Data(layer);}
                 copied.Add(clone);
             }
-            document.Layers[target]=replace ? copied : copied.Concat(document.Layers[target]).ToList();
             if(copyMarks)
             {
-                var guides=(document.EdgeGuides!.GetValueOrDefault(source) ?? []).Select(g=>g with {Id=Guid.NewGuid().ToString("N"),X1=mirror ? canvasWidth-g.X1 : g.X1,X2=mirror ? canvasWidth-g.X2 : g.X2,LinkGroup=null,LockGroup=null,PositionLocked=false,CornerGroup=null}).ToList();
+                var guides=(document.EdgeGuides!.GetValueOrDefault(source) ?? []).Select(g=>g with {Id=Guid.NewGuid().ToString("N"),X1=mirror ? canvasWidth-g.X1 : g.X1,X2=mirror ? canvasWidth-g.X2 : g.X2,Control1X=mirror && g.Control1X!=null ? canvasWidth-g.Control1X : g.Control1X,Control2X=mirror && g.Control2X!=null ? canvasWidth-g.Control2X : g.Control2X,LinkGroup=null,LockGroup=null,PositionLocked=false,CornerGroup=null}).ToList();
+                var original=document.EdgeGuides!.GetValueOrDefault(source) ?? [];
+                var ids=original.Select((g,i)=>(g.Id,newId:guides[i].Id)).ToDictionary(g=>g.Id,g=>g.newId);
+                copied=copied.Select(data=> {var strokes=DrawingDocument.Decode(data.Strokes);bool changed=false;foreach(var stroke in strokes)if(stroke.ContainsPropertyData(PaintedGuideId) && ids.TryGetValue((string)stroke.GetPropertyData(PaintedGuideId),out var id)) {stroke.RemovePropertyData(PaintedGuideId);stroke.AddPropertyData(PaintedGuideId,id);changed=true;}return changed?data with {Strokes=DrawingDocument.Encode(strokes)}:data;}).ToList();
                 document.EdgeGuides![target]=replace ? guides : guides.Concat(document.EdgeGuides!.GetValueOrDefault(target) ?? []).ToList();
             }
+            document.Layers[target]=replace ? copied : copied.Concat(document.Layers[target]).ToList();
             if(copySelection)
             {
                 if(document.Selections!.TryGetValue(source,out var selection))

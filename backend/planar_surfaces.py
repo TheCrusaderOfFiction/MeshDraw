@@ -5,7 +5,7 @@ import numpy as np
 def flatten_supported_planes(mesh,contexts,resolution,cylinders=None):
     original=mesh.vertices.copy();vertices=original.copy();normals=mesh.vertex_normals.copy()
     from cylinder_regions import protected_cylinder_vertices
-    cylinder_protected=protected_cylinder_vertices(mesh,cylinders,2/resolution)
+    cylinder_protected=protected_cylinder_vertices(mesh,cylinders,8/resolution)
     groups=[]
     for c in contexts:
         g=c['meta']

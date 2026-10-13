@@ -36,15 +36,15 @@ def collapse_guided_strips(bm,guides,protected,valid,scale,round_path,round_surf
     convert=lambda p:np.asarray(p,dtype=float)[[0,2,1]]*np.array([1,-1,1])
     rounds=[]
     if round_surfaces is not None:
-        rounds=[(s['center'],s['u'],s['v'],s['radius'],s['tolerance']) for s in round_surfaces]
+        rounds=[(s['center'],s['u'],s['v'],s['radius'],s['tolerance'],s.get('kind','cylinder')) for s in round_surfaces]
     elif round_path.exists():
-        for s in json.loads(round_path.read_text()):rounds.append((convert(s['center']),convert(s['u']),convert(s['v']),s['radius'],s['tolerance']))
+        for s in json.loads(round_path.read_text()):rounds.append((convert(s['center']),convert(s['u']),convert(s['v']),s['radius'],s['tolerance'],s.get('kind','cylinder')))
     # Preserve the complete cylinder disk, including cap interiors and any
     # triangle joining it to the blade. A radius-only shell missed those faces.
     protected_round_points=set()
     if rounds:
         from round_shading import round_protected_points
-        protected_round_points=round_protected_points(bm,[dict(center=c,u=u,v=v,radius=r,tolerance=m) for c,u,v,r,m in rounds])
+        protected_round_points=round_protected_points(bm,round_surfaces if round_surfaces is not None else [dict(center=c,u=u,v=v,radius=r,tolerance=m,kind=k) for c,u,v,r,m,k in rounds])
     corners=[g for g in guides if g['kind']=='Corner']
     tolerance=max(scale*1e-6,1e-8)
     corner_points=np.array([g['point'] for g in corners]).reshape(-1,3)
@@ -58,9 +58,9 @@ def collapse_guided_strips(bm,guides,protected,valid,scale,round_path,round_surf
         if len(corners):
             d=p-corner_points;x=np.einsum('ij,ij->i',d,corner_u);y=np.einsum('ij,ij->i',d,corner_v)
             if np.any(x*x+y*y<=corner_radius*corner_radius):return True
-        for center,u,v,radius,margin in rounds:
+        for center,u,v,radius,margin,kind in rounds:
             d=p-center
-            if np.hypot(d@u,d@v)<=radius+margin:return True
+            if (np.linalg.norm(d) if kind=='sphere' else np.hypot(d@u,d@v))<=radius+margin:return True
         return False
     removed=0;coverage=[]
     for g in guides:

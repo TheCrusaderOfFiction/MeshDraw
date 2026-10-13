@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "preset": "Sparks",
+  "spawnRate": 120,
+  "lifetime": 0.8,
+  "size": 8,
+  "speed": 450,
+  "spread": 90,
+  "color": "#FFE8A6",
+  "blend": "Additive",
+  "loop": false
+}

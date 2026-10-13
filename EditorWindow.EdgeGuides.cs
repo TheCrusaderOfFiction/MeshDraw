@@ -11,17 +11,22 @@ public partial class EditorWindow
     private EdgeGuideData? movingEdgeGuide;
     private Point edgeGuideStart,edgeGuideEnd;
     private Point EdgePoint(Point point)=>new(Math.Clamp(point.X,0,canvasWidth),Math.Clamp(point.Y,0,canvasHeight));
-    private void AddEdgeGuide(EdgeGuideData guide)
+    private void AddEdgeGuide(EdgeGuideData guide,bool record=true)
     {
         var document=Document();var list=document.EdgeGuides!.GetValueOrDefault(ActiveView) ?? [];
         if(list.Count>=128) {Status.Text="This face already has 128 edge marks.";return;}
         list.Add(guide);document.EdgeGuides![ActiveView]=list;DrawingDocument.Validate(document);
-        edgeGuides[ActiveView]=list;RecordChange();RenderRig();
+        edgeGuides[ActiveView]=list;if(record)RecordChange();RenderRig();
         Status.Text=guide.Kind=="Straight" ? "Marked a straight edge. Generation will flatten and simplify that boundary." : "Marked a "+guide.CornerStyle.ToLowerInvariant()+" corner.";
     }
     private bool BeginEdgeGuide(Canvas canvas,Point point)
     {
         point=EdgePoint(point);
+        if(EdgeGuideMode.SelectedIndex==7)
+        {
+            var guide=(edgeGuides.GetValueOrDefault(ActiveView) ?? []).Where(g=>g.Kind!="Corner" && GuideDistance(point,g)<=Math.Max(12,g.Radius)).OrderBy(g=>GuideDistance(point,g)).FirstOrDefault();
+            if(guide!=null)PaintGuide(guide);RenderRig();return true;
+        }
         if(EdgeGuideMode.SelectedIndex is 2 or 3 or 4)
         {
             var nearest=(edgeGuides.GetValueOrDefault(ActiveView) ?? []).Select(g=>new {Guide=g,Distance=GuideDistance(point,g)})
@@ -56,7 +61,9 @@ public partial class EditorWindow
             RecordChange();RenderRig();Status.Text="Moved line and locked partners.";return;
         }
         if((end-start).Length<4) {RenderRig();Status.Text="Drag along the outline to mark a straight edge, or choose Sharp corner to tap a corner.";return;}
-        AddEdgeGuide(new(Guid.NewGuid().ToString("N"),"Straight",start.X,start.Y,end.X,end.Y,EdgeGuideRadius.Value,EdgeGuideBehavior.SelectedIndex==1?"Absolute":"Relative"));
+        var straight=new EdgeGuideData(Guid.NewGuid().ToString("N"),"Straight",start.X,start.Y,end.X,end.Y,EdgeGuideRadius.Value,EdgeGuideBehavior.SelectedIndex==1?"Absolute":"Relative");
+        bool paint=PaintEdgeLines.IsChecked==true && !SelectionEditing && ActiveLayer is {Locked:false,Visible:true,Opacity:>0};
+        AddEdgeGuide(straight,!paint);if(paint)PaintGuide(straight);
         if(ConnectEdgeLines.IsChecked==true)
         foreach(var joint in new[]{start,end})
         {
@@ -68,6 +75,7 @@ public partial class EditorWindow
     }
     private static double GuideDistance(Point point,EdgeGuideData guide)
     {
+        if(guide.Kind=="Curve") {var points=GuidePathPoints(guide);return points.Zip(points.Skip(1),(a,b)=> {var d=b-a;double t=d.LengthSquared<1e-9?0:Math.Clamp(Vector.Multiply(point-a,d)/d.LengthSquared,0,1);return (point-(a+d*t)).Length;}).Min();}
         var a=new Point(guide.X1,guide.Y1);var direction=new Vector(guide.X2-guide.X1,guide.Y2-guide.Y1);
         if(guide.Kind=="Corner" || direction.LengthSquared<.001)return (point-a).Length;
         var t=Math.Clamp(Vector.Multiply(point-a,direction)/direction.LengthSquared,0,1);return (point-(a+direction*t)).Length;
@@ -78,9 +86,10 @@ public partial class EditorWindow
         foreach(var guide in edgeGuides.GetValueOrDefault(face) ?? [])
         {
             var color=highlightedGuides.Contains((face,guide.Id))?Brushes.DeepPink:guide.CornerGroup!=null?Brushes.DodgerBlue:guide.Mode=="Absolute"?Brushes.LimeGreen:Brushes.DarkOrange;
-            if(guide.Kind=="Straight")
+            if(guide.Kind is "Straight" or "Curve")
             {
-                canvas.Children.Add(new Line {X1=guide.X1,Y1=guide.Y1,X2=guide.X2,Y2=guide.Y2,Stroke=color,StrokeThickness=3,IsHitTestVisible=false});
+                if(guide.Kind=="Curve")canvas.Children.Add(new Polyline {Points=new PointCollection(GuidePathPoints(guide)),Stroke=color,StrokeThickness=3,IsHitTestVisible=false});
+                else canvas.Children.Add(new Line {X1=guide.X1,Y1=guide.Y1,X2=guide.X2,Y2=guide.Y2,Stroke=color,StrokeThickness=3,IsHitTestVisible=false});
                 foreach(var point in new[]{new Point(guide.X1,guide.Y1),new Point(guide.X2,guide.Y2)})
                 {var dot=new Ellipse {Width=8,Height=8,Fill=color,Stroke=Brushes.White,StrokeThickness=1,IsHitTestVisible=false};Canvas.SetLeft(dot,point.X-4);Canvas.SetTop(dot,point.Y-4);canvas.Children.Add(dot);}
             }

@@ -26,15 +26,16 @@ public partial class EditorWindow
     }
     private bool BackendReady => File.Exists(Path.Combine(projectRoot,"local-ai","venv","Scripts","python.exe"))
         && File.Exists(Path.Combine(projectRoot,"local-ai","models","Hunyuan3D-2mv","hunyuan3d-dit-v2-mv","model.fp16.safetensors")) && FindBlender()!=null;
-    private void RefreshBackend() => BackendStatus.Text=BackendReady
+    private void RefreshBackend() => BackendStatus.Text=Output.SelectedIndex==2 ? "Local Niagara VFX export. Use a preset sprite or paint on Front. The Unreal plugin creates the Niagara system." : BackendReady
         ? "Local GPU engine ready. Painted properties bake to UV maps. For skeletal output, choose a skeleton type or draw bones."
         : "Run setup-local.ps1 once to install the local engine.";
     private async void GenerateMesh(object sender,RoutedEventArgs e)
     {
         if(generator!=null) return;
-        CommitVertexLimit(this,new RoutedEventArgs());
-        RefreshBackend(); if(!BackendReady) {Status.Text="Install the local AI engine with setup-local.ps1 first."; return;}
-        if(drawingViews.Values.Any(layers=>!layers.Any(l=>l.Kind==LayerKind.Artwork && l.Visible && l.Opacity>0 && (l.Ink.Strokes.Count>0 || l.Photo!=null))))
+        bool vfx=Output.SelectedIndex==2;
+        if(!vfx)CommitVertexLimit(this,new RoutedEventArgs());
+        RefreshBackend(); if(vfx ? !File.Exists(Path.Combine(projectRoot,"local-ai","venv","Scripts","python.exe")) : !BackendReady) {Status.Text="Install the local AI engine with setup-local.ps1 first."; return;}
+        if(!vfx && drawingViews.Values.Any(layers=>!layers.Any(l=>l.Kind==LayerKind.Artwork && l.Visible && l.Opacity>0 && (l.Ink.Strokes.Count>0 || l.Photo!=null))))
         {Status.Text="Draw a closed outline on a visible Artwork layer in every face, including extra faces, first."; return;}
         if(Output.SelectedIndex==1 && skeletonType=="Custom" && rig.Bones.Count==0) {Status.Text="Draw bones or apply a skeleton type before generating a skeletal mesh.";return;}
         try {DrawingDocument.Validate(Document());} catch(Exception error) {ShowError(error); return;}
@@ -43,11 +44,12 @@ public partial class EditorWindow
         var logs=new List<string>();
         try
         {
-            Directory.CreateDirectory(folder); generationLogFolder=folder; WriteDrawings(folder);
-            File.WriteAllText(Path.Combine(folder,"job.json"),JsonSerializer.Serialize(new {version=2,outputType=Output.SelectedIndex==0 ? "static" : "skeletal", textureSize=1024,vertexLimit}));
+            Directory.CreateDirectory(folder); generationLogFolder=folder; if(vfx)WriteVfxInput(folder);else WriteDrawings(folder);
+            File.WriteAllText(Path.Combine(folder,"job.json"),JsonSerializer.Serialize(new {version=2,outputType=vfx ? "vfx" : Output.SelectedIndex==0 ? "static" : "skeletal", textureSize=1024,vertexLimit}));
             var start=new ProcessStartInfo(Path.Combine(projectRoot,"local-ai","venv","Scripts","python.exe"))
                 {WorkingDirectory=projectRoot,UseShellExecute=false,CreateNoWindow=true,RedirectStandardOutput=true,RedirectStandardError=true};
-            foreach(var argument in new[] {"-u",Path.Combine(projectRoot,"backend","generate.py"),"--job",Path.Combine(folder,"job.json"),"--blender",FindBlender()!}) start.ArgumentList.Add(argument);
+            foreach(var argument in new[] {"-u",Path.Combine(projectRoot,"backend",vfx?"generate_vfx.py":"generate.py"),"--job",Path.Combine(folder,"job.json")}) start.ArgumentList.Add(argument);
+            if(!vfx){start.ArgumentList.Add("--blender");start.ArgumentList.Add(FindBlender()!);}
             start.Environment["PYTHONIOENCODING"]="utf-8";
             generator=new Process {StartInfo=start};
             void Receive(object source,DataReceivedEventArgs line)
@@ -86,7 +88,7 @@ public partial class EditorWindow
         else if(exitCode==0 && GenerationOutputReady(folder))
         {
             resultFolder=folder;
-            Status.Text="Saved asset.meshdrawasset for Unreal and Blender. "+OutputFitSummary(folder)+"Open output folder to find your files.";
+            Status.Text=File.Exists(Path.Combine(folder,"effect.json")) ? "Saved Niagara VFX as asset.meshdrawasset. Import it with the updated Unreal plugin. Open output folder to find your files." : "Saved asset.meshdrawasset for Unreal and Blender. "+OutputFitSummary(folder)+"Open output folder to find your files.";
         }
         else
         {
@@ -105,7 +107,7 @@ public partial class EditorWindow
         catch(IOException) {} catch(JsonException) {}
         return "";
     }
-    private static bool GenerationOutputReady(string folder) => new[]{"mesh.fbx","asset.meshdrawasset","result.json"}.All(name=>File.Exists(Path.Combine(folder,name)) && new FileInfo(Path.Combine(folder,name)).Length>0);
+    private static bool GenerationOutputReady(string folder) => new[]{"asset.meshdrawasset","result.json"}.All(name=>File.Exists(Path.Combine(folder,name)) && new FileInfo(Path.Combine(folder,name)).Length>0) && (File.Exists(Path.Combine(folder,"mesh.fbx")) && new FileInfo(Path.Combine(folder,"mesh.fbx")).Length>0 || File.Exists(Path.Combine(folder,"effect.json")) && File.Exists(Path.Combine(folder,"vfx_sprite.png")) && new FileInfo(Path.Combine(folder,"effect.json")).Length>0 && new FileInfo(Path.Combine(folder,"vfx_sprite.png")).Length>0);
     private void OpenGenerationLog(object sender,RoutedEventArgs e)
     {
         if(generationLogFolder!=null) Process.Start(new ProcessStartInfo("notepad.exe") {ArgumentList={Path.Combine(generationLogFolder,"generation.log")},UseShellExecute=true});

@@ -132,7 +132,7 @@ public partial class EditorWindow
         var layers=DrawingDocument.ViewNames.ToDictionary(name=>name,name=>new List<LayerData> {
             DrawingDocument.Data(new PaintLayer {Name="Outline",Kind=LayerKind.Artwork}),
             DrawingDocument.Data(new PaintLayer {Name="Color",Kind=LayerKind.BaseColor}) });
-        activeLayers.Clear();selectedBone=null;ApplyDocument(new EditorDocument(2,output,layers,initialRig,width,height,type));
+        activeLayers.Clear();selectedBone=null;ApplyDocument(new EditorDocument(2,output,layers,initialRig,width,height,type,Vfx:output==2?new VfxSettings():null));
         EditorSkeletonTypes.SelectedItem=skeletonTypes.ContainsKey(type) ? type : "Custom";
         currentDrawingPath=null;ResetDrawingHistory();ShowEditorScreen();Status.Text="New drawing. Returning to the gallery saves your work.";
     }

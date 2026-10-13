@@ -130,14 +130,45 @@ def reconstruct_cylinders(field,cylinders,extent,resolution,volume=None,junction
             # Avoid placing the zero contour exactly on an integer EDT shell;
             # marching cubes can otherwise create touching duplicate surfaces.
             attachment_field=(2*margin+1.125/resolution-distance)*resolution
-            # Guide corrections on the attachment's remote edges must not leave
-            # teeth where its root meets the analytic tube. Blend back to the
-            # smooth hull here, then crop with a continuous distance field.
+            # Extend the attachment's outside cross-section straight into the
+            # tube. Smoothing the combined hull rounds this junction into a
+            # weld-like bead; an extruded section and an exact union do not.
             source=field
             if junction_field is not None:
+                from scipy.ndimage import map_coordinates
+                radial_axes=[i for i in range(3) if i!=axis]
+                a,b=radial_axes
+                qa=q*extent[a]-center[a];qb=q*extent[b]-center[b]
+                aa,bb=np.meshgrid(qa,qb,indexing='ij');dominant=abs(aa)>=abs(bb)
+                support_a=np.any(seeds&(abs(axes[a]-center[a])>cylinder['radius']+2*margin))
+                support_b=np.any(seeds&(abs(axes[b]-center[b])>cylinder['radius']+2*margin))
+                # Use the direction in which an attachment actually extends.
+                # Choosing the closest radial axis at every voxel switches the
+                # sampling direction across the neck and creates diagonal seams.
+                if support_a and not support_b:dominant[:]=True
+                elif support_b and not support_a:dominant[:]=False
+                # Sample the neck immediately outside the tube, rather than a
+                # rounded end farther down a handle; that end's narrower profile
+                # would otherwise leave stepped shoulders at the connection.
+                reach=cylinder['radius']+.5*margin
+                sa=np.where(dominant,np.where(aa>=0,reach,-reach),aa)
+                sb=np.where(~dominant,np.where(bb>=0,reach,-reach),bb)
+                coords=[((sa+center[a])/extent[a]*resolution+3.5).astype(np.float32),((sb+center[b])/extent[b]*resolution+3.5).astype(np.float32)]
+                slices=np.moveaxis(junction_field,axis,0)
+                extruded=np.empty_like(slices)
+                for i,section in enumerate(slices):extruded[i]=map_coordinates(section,coords,order=1,mode='nearest')
+                extruded=np.moveaxis(extruded,0,axis)
                 blend=np.clip((radial+2*margin)/margin,0,1)*np.clip((axial+margin)/margin,0,1)
-                source=field*(1-blend)+junction_field*blend
-            cleaned=np.maximum(exact,np.minimum(source,attachment_field))
-            np.copyto(field,cleaned,where=(radial > -2*margin)&(axial > -margin))
+                root=junction_field*(1-blend)+extruded*blend
+                outer=np.clip((radial+3*margin)/margin,0,1)*np.clip((axial+margin)/margin,0,1)
+                source=field*(1-outer)+root*outer
+            retained=np.minimum(source,attachment_field)
+            if junction_field is not None:
+                # The sampled neck already identifies real attachment volume.
+                # Cropping that straight extrusion with a dilated seed distance
+                # rounds/shrinks its root into stepped rings.
+                np.copyto(retained,source,where=blend>.999)
+            cleaned=np.maximum(exact,retained)
+            np.copyto(field,cleaned,where=(radial > -3*margin)&(axial > -margin))
         np.maximum(field,exact,out=field)
     return field

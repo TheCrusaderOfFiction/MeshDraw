@@ -14,18 +14,21 @@ SAFE_NAME = re.compile(r'^[A-Za-z0-9_-]+\.(?:fbx|png|json|meshdraw|blend|obj)$')
 def package(folder, destination=None):
     folder=Path(folder).resolve()
     destination=Path(destination) if destination else folder/'asset.meshdrawasset'
-    required=['mesh.fbx','project.meshdraw','skeleton.json','job.json',
-              'front.png','back.png','left.png','right.png','top.png','bottom.png']
+    job=json.loads((folder/'job.json').read_text());mode=job.get('outputType')
+    required=['effect.json','vfx_sprite.png','project.meshdraw','skeleton.json','job.json'] if mode=='vfx' else ['mesh.fbx','project.meshdraw','skeleton.json','job.json','front.png','back.png','left.png','right.png','top.png','bottom.png']
     for name in required:
         if not (folder/name).is_file(): raise ValueError(f'Missing {name}. Generate from the layered app before packaging.')
     job=json.loads((folder/'job.json').read_text())
     mode=job.get('outputType')
-    if mode not in ('static','skeletal'): raise ValueError('Invalid output type')
+    if mode not in ('static','skeletal','vfx'): raise ValueError('Invalid output type')
     project=json.loads((folder/'project.meshdraw').read_text(encoding='utf-8'))
-    if project.get('Version')!=2 or project.get('OutputType')!=(1 if mode=='skeletal' else 0):
+    if project.get('Version')!=2 or project.get('OutputType')!={'static':0,'skeletal':1,'vfx':2}[mode]:
         raise ValueError('The layered project and generated mesh type disagree. Regenerate the object first.')
     summary=json.loads((folder/'export-summary.json').read_text()) if (folder/'export-summary.json').is_file() else {}
-    textures=summary.get('textures',{})
+    textures=summary.get('textures',{}) if mode!='vfx' else {}
+    if mode=='vfx':
+        from generate_vfx import validate_effect
+        validate_effect(json.loads((folder/'effect.json').read_text()))
     if any(kind not in ('basecolor','roughness','metallic','emission','height') or name!=f'mesh_{kind}.png' for kind,name in textures.items()):
         raise ValueError('Invalid material map manifest')
     for name in textures.values():
@@ -35,7 +38,7 @@ def package(folder, destination=None):
     views=('front','back','left','right','top','bottom')
     known=set(required+['drawing-fit.json','mesh.blend','shape.obj','paint_bounds.json','manifest.json','unreal-material.json','export-summary.json','result.json','edge_guides.json','round_surfaces.json'])
     known.update(f'{view}_{kind}.png' for view in views for kind in channels)
-    extras=project.get('ExtraFaces') or []
+    extras=(project.get('ExtraFaces') or []) if mode!='vfx' else []
     if len(extras)>8:raise ValueError('Too many extra faces')
     for face in extras:
         identifier=face.get('Id','')
@@ -50,8 +53,9 @@ def package(folder, destination=None):
         if total>MAX_TOTAL or len(payload)>96*1024*1024: raise ValueError('Project is too large for the interchange format')
         files.append({'name':path.name,'size':len(payload),'sha1':hashlib.sha1(payload).hexdigest(),'data':base64.b64encode(payload).decode('ascii')})
     if len(files)>128: raise ValueError('Too many files')
-    document={'format':FORMAT,'version':1,'outputType':mode,'unrealVersion':'5.8',
-        'mesh':'mesh.fbx','project':'project.meshdraw','skeleton':'skeleton.json','textures':textures,'files':files}
+    document={'format':FORMAT,'version':1,'outputType':mode,'unrealVersion':'5.8','project':'project.meshdraw','skeleton':'skeleton.json','textures':textures,'files':files}
+    if mode=='vfx':document.update(effect='effect.json',sprite='vfx_sprite.png')
+    else:document['mesh']='mesh.fbx'
     destination.parent.mkdir(parents=True,exist_ok=True)
     # A partial write must not replace a previously exported asset.
     temporary=destination.with_suffix(destination.suffix+'.tmp')

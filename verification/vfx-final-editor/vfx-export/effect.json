@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "preset": "Magic",
+  "spawnRate": 91,
+  "lifetime": 2.3,
+  "size": 42,
+  "speed": 100,
+  "spread": 80,
+  "color": "#8D5CFF",
+  "blend": "Additive",
+  "loop": false
+}

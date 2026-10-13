@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "preset": "Fire",
+  "spawnRate": 73,
+  "lifetime": 1.6,
+  "size": 37,
+  "speed": 150,
+  "spread": 28,
+  "color": "#FF8040",
+  "blend": "Additive",
+  "loop": true
+}

@@ -1,5 +1,6 @@
 #include "MeshDrawFactory.h"
 #include "MeshDrawBundle.h"
+#include "MeshDrawVfx.h"
 #include "AssetToolsModule.h"
 #include "AssetImportTask.h"
 #include "AssetRegistry/AssetRegistryModule.h"
@@ -37,11 +38,12 @@ namespace MeshDrawImport
     constexpr int64 MaxBytes=256ll*1024*1024;
     bool Parse(const TArray<uint8>& Bytes,TSharedPtr<FJsonObject>& Root,TMap<FString,TArray<uint8>>& Files,FString& Error)
     {
-        const FString Json=FString(FUTF8ToTCHAR(reinterpret_cast<const ANSICHAR*>(Bytes.GetData()),Bytes.Num()).Get());
+        const FUTF8ToTCHAR Converted(reinterpret_cast<const ANSICHAR*>(Bytes.GetData()),Bytes.Num());
+        const FString Json(Converted.Length(),Converted.Get());
         if(!FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Json),Root) || !Root.IsValid()) {Error=TEXT("Invalid MeshDraw JSON.");return false;}
         FString Format,Mode; double Version;
         if(!Root->TryGetStringField(TEXT("format"),Format) || Format!=TEXT("MeshDrawAsset") || !Root->TryGetNumberField(TEXT("version"),Version) || Version!=1
-            || !Root->TryGetStringField(TEXT("outputType"),Mode) || (Mode!=TEXT("static") && Mode!=TEXT("skeletal")))
+            || !Root->TryGetStringField(TEXT("outputType"),Mode) || (Mode!=TEXT("static") && Mode!=TEXT("skeletal") && Mode!=TEXT("vfx")))
         {Error=TEXT("Unsupported MeshDraw asset format or output type.");return false;}
         const TArray<TSharedPtr<FJsonValue>>* Entries;
         if(!Root->TryGetArrayField(TEXT("files"),Entries) || Entries->Num()>128) {Error=TEXT("Invalid file manifest.");return false;}
@@ -59,6 +61,13 @@ namespace MeshDrawImport
             {Error=TEXT("A bundled file is damaged or has an invalid checksum.");return false;}
             Total+=Payload.Num(); if(Total>MaxBytes) {Error=TEXT("Bundle exceeds the 256 MB payload limit.");return false;}
             Files.Add(Name,MoveTemp(Payload));
+        }
+        if(Mode==TEXT("vfx"))
+        {
+            for(const FString& Required:{TEXT("effect.json"),TEXT("vfx_sprite.png"),TEXT("project.meshdraw"),TEXT("skeleton.json"),TEXT("job.json")})if(!Files.Contains(Required)){Error=TEXT("Missing VFX source: ")+Required;return false;}
+            FString Effect,Sprite,Project;
+            if(!Root->TryGetStringField(TEXT("effect"),Effect) || Effect!=TEXT("effect.json") || !Root->TryGetStringField(TEXT("sprite"),Sprite) || Sprite!=TEXT("vfx_sprite.png") || !Root->TryGetStringField(TEXT("project"),Project) || Project!=TEXT("project.meshdraw")) {Error=TEXT("Invalid VFX source references.");return false;}
+            return true;
         }
         for(const FString& Required:{TEXT("mesh.fbx"),TEXT("project.meshdraw"),TEXT("skeleton.json"),TEXT("job.json"),TEXT("front.png"),TEXT("back.png"),TEXT("left.png"),TEXT("right.png"),TEXT("top.png"),TEXT("bottom.png")})
             if(!Files.Contains(Required)) {Error=TEXT("A required source file is missing: ")+Required;return false;}
@@ -79,7 +88,8 @@ namespace MeshDrawImport
     }
     FString Text(const TArray<uint8>& Bytes)
     {
-        return FString(FUTF8ToTCHAR(reinterpret_cast<const ANSICHAR*>(Bytes.GetData()),Bytes.Num()).Get());
+        const FUTF8ToTCHAR Converted(reinterpret_cast<const ANSICHAR*>(Bytes.GetData()),Bytes.Num());
+        return FString(Converted.Length(),Converted.Get());
     }
     TArray<UObject*> ImportFile(const FString& Filename,const FString& Folder,const FString& Name,UFactory* Factory,UObject* Options=nullptr)
     {
@@ -151,6 +161,11 @@ UObject* UMeshDrawFactory::FactoryCreateFile(UClass* InClass,UObject* InParent,F
     Bundle->OutputType=Root->GetStringField(TEXT("outputType"));
     Bundle->SourceFilename=FPaths::ConvertRelativePathToFull(Filename);Bundle->LayeredProjectJson=MeshDrawImport::Text(Files[TEXT("project.meshdraw")]);
     Bundle->DrawnSkeletonJson=MeshDrawImport::Text(Files[TEXT("skeleton.json")]);Bundle->OriginalBundle=Bytes;
+    if(Bundle->OutputType==TEXT("vfx"))
+    {
+        if(!ImportMeshDrawVfx(Folder,SourceFolder,Bundle.Get(),Error)){UE_LOG(LogMeshDraw,Error,TEXT("VFX import failed: %s"),*Error);return nullptr;}
+        return Bundle.Get();
+    }
     UFbxFactory* Fbx=NewObject<UFbxFactory>();Fbx->SetDetectImportTypeOnImport(false);
     UFbxImportUI* Options=NewObject<UFbxImportUI>(Fbx);Fbx->ImportUI=Options;
     const bool Skeletal=Bundle->OutputType==TEXT("skeletal");

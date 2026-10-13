@@ -5,6 +5,6 @@ public class MeshDrawEditor : ModuleRules
     {
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
         PublicDependencyModuleNames.AddRange(new[] { "Core", "CoreUObject", "Engine", "UnrealEd", "MeshDrawRuntime" });
-        PrivateDependencyModuleNames.AddRange(new[] { "AssetTools", "AssetRegistry", "Json", "JsonUtilities", "Projects", "RenderCore" });
+        PrivateDependencyModuleNames.AddRange(new[] { "AssetTools", "AssetRegistry", "Json", "JsonUtilities", "Projects", "RenderCore", "Niagara", "NiagaraEditor" });
     }
 }

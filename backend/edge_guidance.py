@@ -12,7 +12,7 @@ def validate_guides(guides,masks):
         if name not in masks or not isinstance(marks,list) or len(marks)>128:raise ValueError('Invalid face edge marks.')
         h,w=masks[name].shape
         for mark in marks:
-            if not isinstance(mark,dict) or not re.fullmatch('[a-f0-9]{32}',mark.get('Id','')) or mark['Id'] in ids or mark.get('Kind') not in ('Straight','Corner') or mark.get('Mode','Relative') not in ('Relative','Absolute') or mark.get('CornerStyle','Pointed') not in ('Pointed','Rounded'):
+            if not isinstance(mark,dict) or not re.fullmatch('[a-f0-9]{32}',mark.get('Id','')) or mark['Id'] in ids or mark.get('Kind') not in ('Straight','Corner','Curve') or mark.get('Mode','Relative') not in ('Relative','Absolute') or mark.get('CornerStyle','Pointed') not in ('Pointed','Rounded'):
                 raise ValueError('Invalid edge or corner mark.')
             ids.add(mark['Id'])
             values=[mark.get(k) for k in ('X1','Y1','X2','Y2','Radius')]
@@ -27,6 +27,9 @@ def validate_guides(guides,masks):
             if lock_group is not None and (not isinstance(lock_group,str) or not re.fullmatch('[a-f0-9]{32}',lock_group)):raise ValueError('Invalid position lock group.')
             if not isinstance(locked,bool) or (locked and not (group or lock_group)):raise ValueError('Invalid line position lock.')
             x1,y1,x2,y2,r=values
+            if mark['Kind']=='Curve':
+                controls=[mark.get(k) for k in ('Control1X','Control1Y','Control2X','Control2Y')]
+                if any(isinstance(v,bool) or not isinstance(v,(int,float)) or not np.isfinite(v) or v<0 or v>limit for v,limit in zip(controls,[w,h,w,h])):raise ValueError('Invalid curve control points.')
             if not (0<=x1<=w and 0<=x2<=w and 0<=y1<=h and 0<=y2<=h and 2<=r<=64):raise ValueError('Edge mark outside canvas.')
             if mark['Kind']=='Straight' and np.hypot(x2-x1,y2-y1)<4:raise ValueError('Straight edge is too short.')
         result[name]=marks
@@ -50,13 +53,16 @@ def guide_frame(name,masks,extent,faces,pixel_scale,vertical_center=None):
 def prepare_guidance(guides,masks,extent,faces=None,vertical_center=None):
     guides=validate_guides(guides,masks)
     scale=max(max(np.ptp(np.nonzero(m)[0])+1,np.ptp(np.nonzero(m)[1])+1) for n,m in masks.items() if n in AXES)
-    contexts=[];ignored=[]
+    contexts=[];ignored=[];curve_metadata=[]
     for name,marks in guides.items():
         u,v,pixel_center,center=guide_frame(name,masks,extent,faces or [],scale,vertical_center)
         signed=distance_transform_edt(masks[name])-distance_transform_edt(~masks[name])
         for mark in marks:
             start=np.array([mark['X1'],mark['Y1']],dtype=float);end=np.array([mark['X2'],mark['Y2']],dtype=float);radius=mark['Radius']
-            samples=start[None,:] if mark['Kind']=='Corner' else np.linspace(start,end,17)
+            if mark['Kind']=='Curve':
+                from curve_guidance import curve_points
+                samples=curve_points(mark)
+            else:samples=start[None,:] if mark['Kind']=='Corner' else np.linspace(start,end,17)
             distance=map_coordinates(abs(signed),[samples[:,1],samples[:,0]],order=1,mode='constant',cval=1e6)
             if np.median(distance)>radius:
                 ignored.append({'id':mark['Id'],'reason':'Mark is not near the outline boundary.'});continue
@@ -72,6 +78,10 @@ def prepare_guidance(guides,masks,extent,faces=None,vertical_center=None):
                 depth=face.get('Offset',0)*np.dot(abs(normal),extent)/2
                 point=point+normal*depth;meta['Point']=point.tolist()
                 meta['SectionNormal']=normal.tolist();context.update(section_normal=normal,section_depth=depth+shift@normal)
+            if mark['Kind']=='Curve':
+                points=point+(samples[:,0]-start[0])[:,None]/scale*u+(samples[:,1]-start[1])[:,None]/scale*v+np.linspace(0,1,len(samples))[:,None]*depth_offset*(mark.get('Depth2',0)-mark.get('Depth1',0))
+                meta.update(Points=points.tolist(),End=points[-1].tolist())
+                curve_metadata.append(meta);continue
             if mark['Kind']=='Straight':
                 direction=end-start;length=np.linalg.norm(direction);direction/=length;normal=np.array([-direction[1],direction[0]])
                 probes=np.array([start+direction*length*t+normal*d for t in (.25,.5,.75) for d in (-radius,radius)])
@@ -81,7 +91,7 @@ def prepare_guidance(guides,masks,extent,faces=None,vertical_center=None):
                 meta.update(Normal=n.tolist(),End=(point+length/scale*(direction[0]*u+direction[1]*v)+depth_offset*(mark.get('Depth2',0)-mark.get('Depth1',0))).tolist())
                 context.update(direction=direction,length=length,normal=normal,inside=inside)
             contexts.append(context)
-    return contexts,{'marked':sum(len(m) for m in guides.values()),'applied':len(contexts),'ignored':ignored}
+    return contexts,{'marked':sum(len(m) for m in guides.values()),'applied':len(contexts)+len(curve_metadata),'ignored':ignored,'curveMetadata':curve_metadata}
 
 
 def guide_distance_field(field,raw,contexts,extent,resolution):
@@ -159,22 +169,22 @@ def pin_corners(mesh,contexts,extent,resolution,cylinders=None):
         for c in members:
             projection=np.outer(c['u'],c['u'])+np.outer(c['v'],c['v']);matrix+=projection;rhs+=projection@c['meta']['Point']
         point=np.linalg.solve(matrix+np.eye(3)*1e-8,rhs+mean*1e-8)
-        if cylinder_mask([point],cylinders,2/resolution).any():continue
+        if cylinder_mask([point],cylinders,8/resolution).any():continue
         distance=np.linalg.norm(mesh.vertices-point,axis=1);index=int(np.argmin(distance))
-        if protected_cylinder_vertices(mesh,cylinders,2/resolution)[index]:continue
+        if protected_cylinder_vertices(mesh,cylinders,8/resolution)[index]:continue
         if distance[index]>min(min(c['meta']['Radius'] for c in members),3.5*max(extent)/resolution):continue
         candidate=mesh.copy();vertices=candidate.vertices.copy();vertices[index]=point;candidate.vertices=vertices
         if candidate.is_watertight and candidate.volume>0 and np.all(np.einsum('ij,ij->i',candidate.face_normals,mesh.face_normals)>0):mesh=candidate
     for c in contexts:
         if c['mark']['Kind']!='Corner' or c['mark'].get('CornerStyle','Pointed')=='Rounded' or (c['mark'].get('CornerGroup') and len(groups.get(c['mark']['CornerGroup'],[]))>=2):continue
-        if cylinder_mask([c['meta']['Point']],cylinders,2/resolution).any():continue
+        if cylinder_mask([c['meta']['Point']],cylinders,8/resolution).any():continue
         trial=mesh.copy();vertices=trial.vertices.copy();relative=vertices-c['meta']['Point']
         x=relative@c['u'];y=relative@c['v']
         # Only pin the sub-voxel corner cap, never the entire influence region.
         limit=1.25 if c['mark'].get('Mode','Relative')=='Absolute' else 3
         radius=min(c['meta']['Radius'],limit*max(extent)/resolution)
         near=x*x+y*y<=radius*radius
-        near &= ~protected_cylinder_vertices(mesh,cylinders,2/resolution)
+        near &= ~protected_cylinder_vertices(mesh,cylinders,8/resolution)
         if 'section_normal' in c:near &= abs(relative@c['section_normal'])<=c['meta']['Radius']
         vertices[near]-=x[near,None]*c['u']+y[near,None]*c['v']
         trial.vertices=vertices;trial.merge_vertices(digits_vertex=8)

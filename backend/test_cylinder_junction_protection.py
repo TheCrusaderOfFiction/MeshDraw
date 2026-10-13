@@ -26,12 +26,26 @@ body=(abs(x-.5)<.4)&(abs(y-.5)<.15)&(abs(z-.5)<.15)
 blade=(abs(x-.5)<.15)&(y>.5)&(y<.95)&(abs(z-.5)<.035)
 volume=body|blade;padded=np.pad(volume,4)
 field=(distance_transform_edt(padded)-distance_transform_edt(~padded)).astype(np.float32)
+attachment_field=gaussian_filter(field,1)
 gaussian_filter(field,3,output=field)
 c=dict(center=[.5,.5,.5],u=[0,1,0],v=[0,0,1],axis=0,radius=.15,low=.1,high=.9)
-reconstruct_cylinders(field,[c],np.ones(3),n,volume,field.copy())
+reconstruct_cylinders(field,[c],np.ones(3),n,volume,attachment_field)
 solid=field[4:-4,4:-4,4:-4]>0
 assert label(solid)[1]==1,'Attachment became disconnected'
 wall=solid&(abs(x-.2)<.04)
 assert np.hypot(y[wall]-.5,z[wall]-.5).max()<.151,'Raster corners protrude from tube'
 assert solid[n//2,int(.8*n),n//2],'Blade was removed'
+root_width=solid[n//2,int(.68*n),:].sum()
+outside_width=solid[n//2,int(.78*n),:].sum()
+assert root_width<=outside_width+2,'Join grew a rounded weld bead'
 print('PASS: round tube and blade form one solid without raster protrusions')
+
+# A thick neck crosses the radial diagonal. Sampling must continue along the
+# blade direction there, rather than switching to its thickness axis.
+thick=body|((abs(x-.5)<.15)&(y>.5)&(y<.95)&(abs(z-.5)<.14))
+padded=np.pad(thick,4)
+raw=(distance_transform_edt(padded)-distance_transform_edt(~padded)).astype(np.float32)
+field=gaussian_filter(raw,3)
+reconstruct_cylinders(field,[c],np.ones(3),n,thick,gaussian_filter(raw,1))
+assert field[4+n//2,4+int(.6*n),4+int(.63*n)]>0,'Radial diagonal cut a groove into the straight neck'
+print('PASS: thick attachment remains straight across the radial diagonal')

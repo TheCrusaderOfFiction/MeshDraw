@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "preset": "Smoke",
+  "spawnRate": 35,
+  "lifetime": 3,
+  "size": 80,
+  "speed": 45,
+  "spread": 45,
+  "color": "#A1A6B0",
+  "blend": "Translucent",
+  "loop": true
+}
