@@ -1,1 +1,0 @@
-[{"Kind": "Corner", "Point": [-1, -1, 1], "U": [1, 0, 0], "V": [0, 1, 0], "Radius": 0.1, "CornerStyle": "Pointed"}, {"Kind": "Straight", "Point": [-1, -1, 1], "End": [1, -1, 1], "U": [1, 0, 0], "V": [0, 1, 0], "Normal": [0, 1, 0], "Radius": 0.1}]

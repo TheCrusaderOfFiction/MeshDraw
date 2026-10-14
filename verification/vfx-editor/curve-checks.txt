@@ -1,1 +1,0 @@
-PASS: Bezier controls, both outputs, atomic undo/redo, saved guides and strokes, editable curve, mirrored copy, drawing-only straight line, cancellation, painted straight guides, existing-line painting.

@@ -1,9 +1,0 @@
-{
-  "checks": "PASS",
-  "connectedComponents": 1,
-  "capRadiusErrors": [
-    5.474505784530681e-07,
-    6.285168235309335e-07
-  ],
-  "renderVertices": 4395
-}

@@ -1,2 +1,0 @@
-FAIL: Niagara verification failed.
-Lifetime=2 Size=0 Rate=1

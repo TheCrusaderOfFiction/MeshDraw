@@ -1,1 +1,0 @@
-PASS: VFX mode, four presets, particle preview, saved settings, undo/redo, local CPU generation, custom bundle, no mesh requirement, transparent drawn sprite, invalid-setting rejection.

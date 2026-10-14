@@ -1,1 +1,0 @@
-PASS: closed curved mesh, preserved curve guide, no straight-plane flattening, vertex budget respected.

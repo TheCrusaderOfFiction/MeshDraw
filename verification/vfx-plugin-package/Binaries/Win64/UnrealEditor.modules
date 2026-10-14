@@ -1,8 +1,0 @@
-{
-	"BuildId": "55116800",
-	"Modules": 
-	{
-		"MeshDrawEditor": "UnrealEditor-MeshDrawEditor.dll",
-		"MeshDrawRuntime": "UnrealEditor-MeshDrawRuntime.dll"
-	}
-}
